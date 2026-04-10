@@ -28,11 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Kërkimi
-document.getElementById('searchInput')?.addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase();
-    const filtered = movies.filter(m => m.title.toLowerCase().includes(query));
-    renderRow('trendingRow', filtered.slice(0, 6));
-});
+const searchInput = document.querySelector('.search-bar input');
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        const filtered = movies.filter(m => m.title.toLowerCase().includes(query));
+        renderRow('trendingRow', filtered.slice(0, 6));
+    });
+}
 
 // Filtrimi sipas zhanrit (Demo)
 document.querySelectorAll('.dropdown-content a').forEach(link => {
