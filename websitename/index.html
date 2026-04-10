@@ -1,111 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AlbFilms24 - Filma & Seriale</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="css/home.css">
-  <script defer src="js/home.js"></script>
-  <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎬%3C/text%3E%3C/svg%3E">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlbFlix - Filma & Seriale HD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script defer src="js/main.js"></script>
 </head>
 <body>
 
 <!-- NAVBAR -->
-<div class="navbar">
-  <div class="logo-container">
-    <i class="fas fa-film"></i>
-    <h1>AlbFilms24</h1>
-  </div>
-  <div class="nav-links">
-    <a href="#" class="active">Home</a>
-    <div class="search-wrapper">
-      <i class="fas fa-search search-icon"></i>
-      <input type="text" class="search-bar" placeholder="Search..." onfocus="openSearchModal()">
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="index.html" class="logo">
+            <i class="fas fa-film"></i>
+            <span>AlbFlix</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="active">Home</a>
+            <div class="dropdown">
+                <button class="dropbtn">Genre <i class="fas fa-chevron-down"></i></button>
+                <div class="dropdown-content">
+                    <a href="#" data-genre="action">Action</a>
+                    <a href="#" data-genre="drama">Drama</a>
+                    <a href="#" data-genre="comedy">Comedy</a>
+                    <a href="#" data-genre="thriller">Thriller</a>
+                    <a href="#" data-genre="horror">Horror</a>
+                    <a href="#" data-genre="romance">Romance</a>
+                </div>
+            </div>
+            <a href="#">TV Shows</a>
+            <a href="#">Movies</a>
+        </div>
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search movies, TV shows..." id="searchInput">
+        </div>
     </div>
-  </div>
-</div>
+</nav>
 
-<!-- BANNER -->
-<div class="banner-slider">
-  <div class="banner-slides" id="banner-slides"></div>
-  <div class="banner-dots" id="banner-dots"></div>
-  <button class="banner-arrow left" id="banner-prev"><i class="fas fa-chevron-left"></i></button>
-  <button class="banner-arrow right" id="banner-next"><i class="fas fa-chevron-right"></i></button>
-</div>
-
-<!-- ROW: MOVIES -->
-<div class="row">
-  <div class="row-header">
-    <h2><i class="fas fa-fire"></i> Trending Movies</h2>
-    <div class="slider-controls">
-      <button class="slider-arrow left" data-row="movies-list"><i class="fas fa-chevron-left"></i></button>
-      <button class="slider-arrow right" data-row="movies-list"><i class="fas fa-chevron-right"></i></button>
+<!-- HERO BANNER -->
+<section class="hero" id="hero">
+    <div class="hero-content">
+        <h1 id="heroTitle">The Last Kingdom</h1>
+        <p id="heroDesc">As Alfred the Great defends his kingdom from Norse invaders, Uhtred - born a Saxon but raised by Vikings - seeks to claim his ancestral birthright.</p>
+        <div class="hero-buttons">
+            <button class="btn-play" id="heroPlayBtn"><i class="fas fa-play"></i> Watch Now</button>
+            <button class="btn-info">More Info</button>
+        </div>
     </div>
-  </div>
-  <div class="list" id="movies-list"></div>
-</div>
+</section>
 
-<!-- ROW: TV SHOWS -->
-<div class="row">
-  <div class="row-header">
-    <h2><i class="fas fa-tv"></i> Trending TV Shows</h2>
-    <div class="slider-controls">
-      <button class="slider-arrow left" data-row="tvshows-list"><i class="fas fa-chevron-left"></i></button>
-      <button class="slider-arrow right" data-row="tvshows-list"><i class="fas fa-chevron-right"></i></button>
+<!-- ROWS -->
+<div class="container">
+    <div class="row">
+        <div class="row-header">
+            <h2>Trending Now</h2>
+            <a href="#" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
+        </div>
+        <div class="movies-row" id="trendingRow"></div>
     </div>
-  </div>
-  <div class="list" id="tvshows-list"></div>
-</div>
 
-<!-- ROW: POPULAR SERIES (NARCOS EXAMPLE) -->
-<div class="row">
-  <div class="row-header">
-    <h2><i class="fas fa-star"></i> Popular Series</h2>
-    <div class="slider-controls">
-      <button class="slider-arrow left" data-row="popular-series"><i class="fas fa-chevron-left"></i></button>
-      <button class="slider-arrow right" data-row="popular-series"><i class="fas fa-chevron-right"></i></button>
+    <div class="row">
+        <div class="row-header">
+            <h2>Popular Movies</h2>
+            <a href="#" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
+        </div>
+        <div class="movies-row" id="moviesRow"></div>
     </div>
-  </div>
-  <div class="list" id="popular-series"></div>
-</div>
 
-<!-- MODAL PËR DETAJE -->
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <span class="close-modal" onclick="closeModal()">&times;</span>
-    <div class="modal-body">
-      <img id="modal-image" alt="">
-      <div class="modal-text">
-        <h2 id="modal-title"></h2>
-        <div class="rating" id="modal-rating"></div>
-        <p id="modal-description"></p>
-        <a href="#" id="watch-btn" class="watch-btn"><i class="fas fa-play"></i> Watch Now</a>
-      </div>
+    <div class="row">
+        <div class="row-header">
+            <h2>Popular TV Shows</h2>
+            <a href="#" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
+        </div>
+        <div class="movies-row" id="tvRow"></div>
     </div>
-  </div>
 </div>
 
-<!-- MODAL KËRKIMI -->
-<div class="search-modal" id="search-modal">
-  <div class="search-modal-content">
-    <span class="close-search" onclick="closeSearchModal()">&times;</span>
-    <div class="search-modal-header">
-      <i class="fas fa-search"></i>
-      <input type="text" id="search-input" placeholder="Search movies or series...">
-    </div>
-    <div class="search-results" id="search-results"></div>
-  </div>
-</div>
-
-<!-- FOOTER -->
 <footer class="footer">
-  <div class="footer-content">
-    <p>&copy; 2025 AlbFilms24. All rights reserved.</p>
-  </div>
+    <div class="footer-content">
+        <p>&copy; 2025 AlbFlix. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="#">About</a>
+            <a href="#">DMCA</a>
+            <a href="#">Contact</a>
+        </div>
+    </div>
 </footer>
 
 </body>
