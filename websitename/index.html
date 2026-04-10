@@ -1,108 +1,123 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AlbFilms24</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>AlbFilms24 - Filma & Seriale HD</title>
+  <meta name="description" content="Shiko filmat dhe serialet e fundit falas në AlbFilms24. Cilësi HD, përditësim ditor.">
+  <meta name="theme-color" content="#141414">
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <!-- CSS kryesor -->
   <link rel="stylesheet" href="css/home.css">
-  <link rel="preload" href="css/home.css" as="style">
-  <link rel="preload" href="js/home.js" as="script">
-  <link rel="icon" href="img/websitename.ico" type="image/x-icon">
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎬%3C/text%3E%3C/svg%3E">
+  <!-- JS -->
   <script defer src="js/home.js"></script>
-  <script type="text/javascript" data-cfasync="false">
-  /*<![CDATA[/* */
-    (function(){var m=window,v="d9dd21efc30c8427bb5d1c71908a8021",d=[["siteId",673+199-335-691-280+5234885],["minBid",0],["popundersPerIP","0"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],b=["d3d3LmludGVsbGlwb3B1cC5jb20veGNvdW50cnlTZWxlY3QubWluLmNzcw==","ZDNtcjd5MTU0ZDJxZzUuY2xvdWRmcm9udC5uZXQvai9jVVJJLm1pbi5qcw=="],r=-1,n,z,a=function(){clearTimeout(z);r++;if(b[r]&&!(1782797335000<(new Date).getTime()&&1<r)){n=m.document.createElement("script");n.type="text/javascript";n.async=!0;var y=m.document.getElementsByTagName("script")[0];n.src="https://"+atob(b[r]);n.crossOrigin="anonymous";n.onerror=a;n.onload=function(){clearTimeout(z);m[v.slice(0,16)+v.slice(0,16)]||a()};z=setTimeout(a,5E3);y.parentNode.insertBefore(n,y)}};if(!m[v]){try{Object.freeze(m[v]=d)}catch(e){}a()}})();
-  /*]]>/* */
-  </script>
 </head>
-
 <body>
-  <div class="navbar">
-    <a href="index.html" class="logo-container">
-      <img src="img/websitename.png" alt="WEBSITENAME" />
-      <h1 title="Movie Stream">Website Name</h1>
-    </a>
-  
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <input type="text" class="search-bar" placeholder="Search..." onfocus="openSearchModal()" />
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="logo-container">
+    <i class="fas fa-film"></i>
+    <h1>AlbFilms24</h1>
+  </div>
+  <div class="nav-links">
+    <a href="#" class="active">Home</a>
+    <a href="#">Movies</a>
+    <a href="#">TV Shows</a>
+    <div class="search-wrapper">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" class="search-bar" placeholder="Search films, seriale..." onfocus="openSearchModal()">
     </div>
   </div>
+</div>
 
-  <div class="banner-slider" id="banner-slider">
-    <div class="banner-slides" id="banner-slides"></div>
-    <div class="banner-dots" id="banner-dots"></div>
-  </div>
+<!-- BANNER SLIDER -->
+<div class="banner-slider">
+  <div class="banner-slides" id="banner-slides"></div>
+  <div class="banner-dots" id="banner-dots"></div>
+  <button class="banner-arrow left" id="banner-prev"><i class="fas fa-chevron-left"></i></button>
+  <button class="banner-arrow right" id="banner-next"><i class="fas fa-chevron-right"></i></button>
+</div>
 
-  <div class="row">
-    <div class="row-header">
-      <h2>Trending Movies</h2>
-      <div class="slider-nav">
-        <button class="slider-arrow left" onclick="slide('movies-list', 'left')" aria-label="Previous slide">&lt;</button>
-        <button class="slider-arrow right" onclick="slide('movies-list', 'right')" aria-label="Next slide">&gt;</button>
-      </div>
+<!-- ROW: Filma -->
+<div class="row">
+  <div class="row-header">
+    <h2><i class="fas fa-fire"></i> Trending Movies</h2>
+    <div class="slider-controls">
+      <button class="slider-arrow left" data-row="movies-list"><i class="fas fa-chevron-left"></i></button>
+      <button class="slider-arrow right" data-row="movies-list"><i class="fas fa-chevron-right"></i></button>
     </div>
-    <div class="list" id="movies-list"></div>
   </div>
+  <div class="list" id="movies-list"></div>
+</div>
 
-  <div class="row">
-    <div class="row-header">
-      <h2>Trending TV Shows</h2>
-      <div class="slider-nav">
-        <button class="slider-arrow left" onclick="slide('tvshows-list', 'left')" aria-label="Previous slide">&lt;</button>
-        <button class="slider-arrow right" onclick="slide('tvshows-list', 'right')" aria-label="Next slide">&gt;</button>
-      </div>
+<!-- ROW: Seriale -->
+<div class="row">
+  <div class="row-header">
+    <h2><i class="fas fa-tv"></i> Trending TV Shows</h2>
+    <div class="slider-controls">
+      <button class="slider-arrow left" data-row="tvshows-list"><i class="fas fa-chevron-left"></i></button>
+      <button class="slider-arrow right" data-row="tvshows-list"><i class="fas fa-chevron-right"></i></button>
     </div>
-    <div class="list" id="tvshows-list"></div>
   </div>
+  <div class="list" id="tvshows-list"></div>
+</div>
 
-  <div class="row">
-    <div class="row-header">
-      <h2>Trending Anime</h2>
-      <div class="slider-nav">
-        <button class="slider-arrow left" onclick="slide('anime-list', 'left')" aria-label="Previous slide">&lt;</button>
-        <button class="slider-arrow right" onclick="slide('anime-list', 'right')" aria-label="Next slide">&gt;</button>
-      </div>
+<!-- ROW: Anime -->
+<div class="row">
+  <div class="row-header">
+    <h2><i class="fas fa-dragon"></i> Trending Anime</h2>
+    <div class="slider-controls">
+      <button class="slider-arrow left" data-row="anime-list"><i class="fas fa-chevron-left"></i></button>
+      <button class="slider-arrow right" data-row="anime-list"><i class="fas fa-chevron-right"></i></button>
     </div>
-    <div class="list" id="anime-list"></div>
   </div>
+  <div class="list" id="anime-list"></div>
+</div>
 
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <div class="modal-body">
-        <img id="modal-image" src="" alt="" />
-        <div class="modal-text">
-          <h2 id="modal-title"></h2>
-          <div class="stars" id="modal-rating"></div>
-          <p id="modal-description"></p>
-          
-          <div class="modal-extra-info">
-            <p><strong>Genres:</strong> <span id="modal-genres"></span></p>
-            <p><strong>Cast:</strong> <span id="modal-cast"></span></p>
-          </div>
-
-          <a href="#" id="watch-button" class="watch-btn">
-            <i class="fas fa-play"></i> Watch Now
-          </a>
+<!-- MODAL (Detajet e filmit) -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeModal()">&times;</span>
+    <div class="modal-body">
+      <img id="modal-image" alt="">
+      <div class="modal-text">
+        <h2 id="modal-title"></h2>
+        <div class="rating" id="modal-rating"></div>
+        <p id="modal-description"></p>
+        <div class="modal-info">
+          <p><strong>Release:</strong> <span id="modal-date"></span></p>
+          <p><strong>Genres:</strong> <span id="modal-genres"></span></p>
         </div>
+        <a href="#" id="watch-btn" class="watch-btn"><i class="fas fa-play"></i> Watch Now</a>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="search-modal" id="search-modal">
-    <span class="close" onclick="closeSearchModal()">&times;</span>
-    <input type="text" id="search-input" placeholder="Search for a movie or show..." oninput="searchTMDB()" />
-    <div class="results" id="search-results"></div>
+<!-- MODAL KËRKIMI -->
+<div class="search-modal" id="search-modal">
+  <div class="search-modal-content">
+    <span class="close-search" onclick="closeSearchModal()">&times;</span>
+    <div class="search-modal-header">
+      <i class="fas fa-search"></i>
+      <input type="text" id="search-input" placeholder="Search movies, TV shows..." autocomplete="off">
+    </div>
+    <div class="search-results" id="search-results"></div>
   </div>
+</div>
 
+<!-- FOOTER -->
 <footer class="footer">
   <div class="footer-content">
-    <p>&copy; 2025 Website Name. All rights reserved.</p>
+    <p>&copy; 2025 AlbFilms24. Të gjitha të drejtat e rezervuara.</p>
     <div class="footer-links">
       <a href="disclaimer.html">Disclaimer</a>
       <a href="about.html">About Us</a>
@@ -111,5 +126,4 @@
 </footer>
 
 </body>
-
 </html>
