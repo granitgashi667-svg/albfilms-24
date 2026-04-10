@@ -1,4 +1,3 @@
-// TË DHËNA DEMO
 const movies = [
     { id: 1, title: "Inception", year: "2010", rating: 8.8, poster: "https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg", type: "movie" },
     { id: 2, title: "The Dark Knight", year: "2008", rating: 9.0, poster: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", type: "movie" },
@@ -20,14 +19,12 @@ function renderRow(containerId, items) {
     `).join('');
 }
 
-// Inicializimi
 document.addEventListener('DOMContentLoaded', () => {
     renderRow('trendingRow', movies.slice(0, 6));
     renderRow('moviesRow', movies.filter(m => m.type === 'movie').slice(0, 4));
     renderRow('tvRow', movies.filter(m => m.type === 'tv').slice(0, 3));
 });
 
-// Kërkimi
 const searchInput = document.querySelector('.search-bar input');
 if (searchInput) {
     searchInput.addEventListener('input', (e) => {
@@ -37,7 +34,6 @@ if (searchInput) {
     });
 }
 
-// Filtrimi sipas zhanrit (Demo)
 document.querySelectorAll('.dropdown-content a').forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
