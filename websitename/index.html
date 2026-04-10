@@ -3,35 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlbFlix - Filma & Seriale HD</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>AlbFilms24 | Discover Movies & TV Shows</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/home.css">
     <script defer src="js/home.js"></script>
 </head>
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar">
     <div class="nav-container">
         <a href="index.html" class="logo">
             <i class="fas fa-film"></i>
-            <span>AlbFlix</span>
+            <span>AlbFilms24</span>
         </a>
         <div class="nav-links">
             <a href="index.html" class="active">Home</a>
             <div class="dropdown">
-                <button class="dropbtn">Genre <i class="fas fa-chevron-down"></i></button>
+                <button class="dropbtn">Browse <i class="fas fa-chevron-down"></i></button>
                 <div class="dropdown-content">
-                    <a href="#" data-genre="action">Action</a>
-                    <a href="#" data-genre="drama">Drama</a>
-                    <a href="#" data-genre="comedy">Comedy</a>
-                    <a href="#" data-genre="thriller">Thriller</a>
-                    <a href="#" data-genre="horror">Horror</a>
-                    <a href="#" data-genre="romance">Romance</a>
+                    <a href="#">Movies</a>
+                    <a href="#">TV Shows</a>
+                    <a href="#">Anime</a>
+                    <a href="#">My Library</a>
                 </div>
             </div>
-            <a href="#">TV Shows</a>
             <a href="#">Movies</a>
+            <a href="#">TV Shows</a>
+            <a href="#">Anime</a>
         </div>
         <div class="search-bar">
             <i class="fas fa-search"></i>
@@ -40,17 +40,19 @@
     </div>
 </nav>
 
+<!-- HERO SECTION -->
 <section class="hero">
     <div class="hero-content">
-        <h1>The Last Kingdom</h1>
-        <p>As Alfred the Great defends his kingdom from Norse invaders, Uhtred - born a Saxon but raised by Vikings - seeks to claim his ancestral birthright.</p>
+        <h1>AlbFilms24</h1>
+        <p>Your ultimate destination for discovering movies and TV shows. Stream, explore, and enjoy endless entertainment.</p>
         <div class="hero-buttons">
-            <button class="btn-play"><i class="fas fa-play"></i> Watch Now</button>
-            <button class="btn-info">More Info</button>
+            <button class="btn-play" id="heroPlayBtn"><i class="fas fa-play"></i> Start Exploring</button>
+            <button class="btn-info">Learn More</button>
         </div>
     </div>
 </section>
 
+<!-- ROWS -->
 <div class="container">
     <div class="row">
         <div class="row-header">
@@ -77,14 +79,40 @@
     </div>
 </div>
 
+<!-- FOOTER I RI (IDENTIK ME BOREDFLIX) -->
 <footer class="footer">
-    <div class="footer-content">
-        <p>&copy; 2025 AlbFlix. All rights reserved.</p>
-        <div class="footer-links">
-            <a href="#">About</a>
-            <a href="#">DMCA</a>
-            <a href="#">Contact</a>
+    <div class="footer-container">
+        <div class="footer-section">
+            <h3>AlbFilms24</h3>
+            <p>Your ultimate destination for discovering movies and TV shows. Stream, explore, and enjoy endless entertainment.</p>
         </div>
+        <div class="footer-section">
+            <h4>Browse</h4>
+            <ul>
+                <li><a href="#">Movies</a></li>
+                <li><a href="#">TV Shows</a></li>
+                <li><a href="#">Anime</a></li>
+                <li><a href="#">My Library</a></li>
+                <li><a href="#">Search</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Information</h4>
+            <ul>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Contact Us</a></li>
+                <li><a href="#">About</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Important Notice</h4>
+            <p>AlbFilms24 does not host or store any media files. All content is sourced from third-party services and platforms. We respect intellectual property rights and comply with DMCA regulations.</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 AlbFilms24. All rights reserved.</p>
+        <p>Made with <i class="fas fa-heart" style="color: #e50914;"></i> for movie lovers • Version 1.0 ⟳</p>
     </div>
 </footer>
 
