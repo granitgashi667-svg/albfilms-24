@@ -2,22 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>AlbFilms24 - Filma & Seriale HD</title>
-  <meta name="description" content="Shiko filmat dhe serialet e fundit falas në AlbFilms24. Cilësi HD, përditësim ditor.">
-  <meta name="theme-color" content="#141414">
-  <!-- Google Fonts -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlbFilms24 - Filma & Seriale</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <!-- Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <!-- CSS kryesor -->
   <link rel="stylesheet" href="css/home.css">
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎬%3C/text%3E%3C/svg%3E">
-  <!-- JS -->
   <script defer src="js/home.js"></script>
+  <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎬%3C/text%3E%3C/svg%3E">
 </head>
 <body>
 
@@ -29,16 +22,14 @@
   </div>
   <div class="nav-links">
     <a href="#" class="active">Home</a>
-    <a href="#">Movies</a>
-    <a href="#">TV Shows</a>
     <div class="search-wrapper">
       <i class="fas fa-search search-icon"></i>
-      <input type="text" class="search-bar" placeholder="Search films, seriale..." onfocus="openSearchModal()">
+      <input type="text" class="search-bar" placeholder="Search..." onfocus="openSearchModal()">
     </div>
   </div>
 </div>
 
-<!-- BANNER SLIDER -->
+<!-- BANNER -->
 <div class="banner-slider">
   <div class="banner-slides" id="banner-slides"></div>
   <div class="banner-dots" id="banner-dots"></div>
@@ -46,7 +37,7 @@
   <button class="banner-arrow right" id="banner-next"><i class="fas fa-chevron-right"></i></button>
 </div>
 
-<!-- ROW: Filma -->
+<!-- ROW: MOVIES -->
 <div class="row">
   <div class="row-header">
     <h2><i class="fas fa-fire"></i> Trending Movies</h2>
@@ -58,7 +49,7 @@
   <div class="list" id="movies-list"></div>
 </div>
 
-<!-- ROW: Seriale -->
+<!-- ROW: TV SHOWS -->
 <div class="row">
   <div class="row-header">
     <h2><i class="fas fa-tv"></i> Trending TV Shows</h2>
@@ -70,19 +61,19 @@
   <div class="list" id="tvshows-list"></div>
 </div>
 
-<!-- ROW: Anime -->
+<!-- ROW: POPULAR SERIES (NARCOS EXAMPLE) -->
 <div class="row">
   <div class="row-header">
-    <h2><i class="fas fa-dragon"></i> Trending Anime</h2>
+    <h2><i class="fas fa-star"></i> Popular Series</h2>
     <div class="slider-controls">
-      <button class="slider-arrow left" data-row="anime-list"><i class="fas fa-chevron-left"></i></button>
-      <button class="slider-arrow right" data-row="anime-list"><i class="fas fa-chevron-right"></i></button>
+      <button class="slider-arrow left" data-row="popular-series"><i class="fas fa-chevron-left"></i></button>
+      <button class="slider-arrow right" data-row="popular-series"><i class="fas fa-chevron-right"></i></button>
     </div>
   </div>
-  <div class="list" id="anime-list"></div>
+  <div class="list" id="popular-series"></div>
 </div>
 
-<!-- MODAL (Detajet e filmit) -->
+<!-- MODAL PËR DETAJE -->
 <div class="modal" id="modal">
   <div class="modal-content">
     <span class="close-modal" onclick="closeModal()">&times;</span>
@@ -92,10 +83,6 @@
         <h2 id="modal-title"></h2>
         <div class="rating" id="modal-rating"></div>
         <p id="modal-description"></p>
-        <div class="modal-info">
-          <p><strong>Release:</strong> <span id="modal-date"></span></p>
-          <p><strong>Genres:</strong> <span id="modal-genres"></span></p>
-        </div>
         <a href="#" id="watch-btn" class="watch-btn"><i class="fas fa-play"></i> Watch Now</a>
       </div>
     </div>
@@ -108,7 +95,7 @@
     <span class="close-search" onclick="closeSearchModal()">&times;</span>
     <div class="search-modal-header">
       <i class="fas fa-search"></i>
-      <input type="text" id="search-input" placeholder="Search movies, TV shows..." autocomplete="off">
+      <input type="text" id="search-input" placeholder="Search movies or series...">
     </div>
     <div class="search-results" id="search-results"></div>
   </div>
@@ -117,11 +104,7 @@
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-content">
-    <p>&copy; 2025 AlbFilms24. Të gjitha të drejtat e rezervuara.</p>
-    <div class="footer-links">
-      <a href="disclaimer.html">Disclaimer</a>
-      <a href="about.html">About Us</a>
-    </div>
+    <p>&copy; 2025 AlbFilms24. All rights reserved.</p>
   </div>
 </footer>
 
