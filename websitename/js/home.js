@@ -1,177 +1,151 @@
-// ===================================
-// CONFIGURATION
-// ===================================
-const BASE_URL = '/api';
-const POSTER_URL = 'https://image.tmdb.org/t/p/w500'; // For movie cards
-const BACKDROP_URL = 'https://image.tmdb.org/t/p/w1280'; // For the main banner
-let currentItem;
-let movieGenres = new Map();
-let tvGenres = new Map();
-let bannerSlidesData = [];
+// ==================== TMDB CONFIG ====================
+const API_KEY = 'YOUR_TMDB_API_KEY'; // <--- VENDOS API KEY TUAJ KETU
+const BASE_URL = 'https://api.themoviedb.org/3';
+const IMG_URL = 'https://image.tmdb.org/t/p/w500';
+const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
+
+// ==================== VARIABLES ====================
 let currentBannerIndex = 0;
 let bannerInterval;
+let currentSearchTimeout;
 
-// ===================================
-// DATA FETCHING FUNCTIONS
-// ===================================
-
-async function fetchGenres() {
+// ==================== FETCH ====================
+async function fetchData(endpoint) {
   try {
-    const movieRes = await fetch(`${BASE_URL}/genre/movie/list`);
-    const movieData = await movieRes.json();
-    movieData.genres.forEach(genre => movieGenres.set(genre.id, genre.name));
-
-    const tvRes = await fetch(`${BASE_URL}/genre/tv/list`);
-    const tvData = await tvRes.json();
-    tvData.genres.forEach(genre => tvGenres.set(genre.id, genre.name));
+    const res = await fetch(`${BASE_URL}${endpoint}?api_key=${API_KEY}&language=en-US`);
+    if (!res.ok) throw new Error('API error');
+    return await res.json();
   } catch (error) {
-    console.error("Failed to fetch genres:", error);
+    console.error('Fetch error:', error);
+    return { results: [] };
   }
 }
 
-async function fetchTrending(type) {
-  const res = await fetch(`${BASE_URL}/trending/${type}/week`);
-  const data = await res.json();
-  return data.results;
-}
-
-async function fetchTrendingAnime() {
-  // Directly discover TV shows with the Animation genre (ID 16) and 'anime' keyword (ID 210024)
-  const res = await fetch(`${BASE_URL}/discover/tv?with_genres=16&with_keywords=210024&sort_by=popularity.desc`);
-  const data = await res.json();
-  return data.results;
-}
-
-async function searchTMDB() {
-  const query = document.getElementById('search-input').value;
-  const container = document.getElementById('search-results');
-
-  if (!query.trim()) {
-    container.innerHTML = '';
-    return;
-  }
-
-  const res = await fetch(`${BASE_URL}/search/multi?query=${encodeURIComponent(query)}`);
-  const data = await res.json();
-  container.innerHTML = ''; // Clear previous results
-
-  data.results.forEach(item => {
-    if (item.media_type === 'person' || !item.poster_path) return;
-
-    const movieCard = document.createElement('div');
-    movieCard.className = 'movie-card';
-    movieCard.onclick = () => {
-      closeSearchModal();
-      showDetails(item);
-    };
-
-    const title = item.title || item.name;
-    const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
-    const year = item.release_date ? item.release_date.substring(0, 4) : (item.first_air_date ? item.first_air_date.substring(0, 4) : '');
-    const description = item.overview;
-
-    movieCard.innerHTML = `
-      <img src="${POSTER_URL}${item.poster_path}" alt="${title}" loading="lazy">
-      <div class="card-content">
-        <h3 class="card-title">${title}</h3>
-        <div class="card-meta">
-          <span class="rating">★ ${rating}</span>
-          <span class="year">${year}</span>
-        </div>
-        <p class="card-description">${description}</p>
+// ==================== BANNER ====================
+async function loadBanner() {
+  const data = await fetchData('/trending/all/week');
+  const slidesContainer = document.getElementById('banner-slides');
+  const dotsContainer = document.getElementById('banner-dots');
+  
+  if (!slidesContainer || !dotsContainer) return;
+  
+  slidesContainer.innerHTML = '';
+  dotsContainer.innerHTML = '';
+  
+  data.results.slice(0, 5).forEach((item, index) => {
+    // Slide
+    const slide = document.createElement('div');
+    slide.className = 'banner-slide';
+    slide.innerHTML = `
+      <img src="${BACKDROP_URL + item.backdrop_path}" alt="${item.title || item.name}">
+      <div class="banner-info">
+        <h2>${item.title || item.name}</h2>
+        <p>${item.overview?.substring(0, 140) || 'No description available'}...</p>
+        <button class="watch-btn" onclick="openModalFromItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+          <i class="fas fa-play"></i> Watch Now
+        </button>
       </div>
     `;
-    container.appendChild(movieCard);
+    slidesContainer.appendChild(slide);
+    
+    // Dot
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dot.addEventListener('click', () => goToSlide(index));
+    dotsContainer.appendChild(dot);
+  });
+  
+  updateDots();
+  startAutoSlide();
+}
+
+function goToSlide(index) {
+  currentBannerIndex = index;
+  const slides = document.querySelector('.banner-slides');
+  if (slides) slides.style.transform = `translateX(-${currentBannerIndex * 100}%)`;
+  updateDots();
+}
+
+function updateDots() {
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach((dot, i) => {
+    dot.classList.toggle('active', i === currentBannerIndex);
   });
 }
 
-
-// ===================================
-// UI DISPLAY FUNCTIONS (These were missing)
-// ===================================
-
-function displayBanner(item) {
-  document.getElementById('banner').style.backgroundImage = `url(${BACKDROP_URL}${item.backdrop_path})`;
-  document.getElementById('banner-title').textContent = item.title || item.name;
+function startAutoSlide() {
+  if (bannerInterval) clearInterval(bannerInterval);
+  bannerInterval = setInterval(() => {
+    const total = document.querySelectorAll('.banner-slide').length;
+    if (total === 0) return;
+    currentBannerIndex = (currentBannerIndex + 1) % total;
+    const slides = document.querySelector('.banner-slides');
+    if (slides) slides.style.transform = `translateX(-${currentBannerIndex * 100}%)`;
+    updateDots();
+  }, 6000);
 }
 
-function displayList(items, containerId) {
+// ==================== ROWS ====================
+async function loadRows() {
+  const movies = await fetchData('/trending/movie/week');
+  const tvShows = await fetchData('/trending/tv/week');
+  const anime = await fetchData('/discover/tv?with_genres=16'); // Anime genre ID = 16
+  
+  renderRow('movies-list', movies.results.slice(0, 12));
+  renderRow('tvshows-list', tvShows.results.slice(0, 12));
+  renderRow('anime-list', anime.results.slice(0, 12));
+}
+
+function renderRow(containerId, items) {
   const container = document.getElementById(containerId);
+  if (!container) return;
   container.innerHTML = '';
+  
   items.forEach(item => {
-    // Skip items without a poster
-    if (!item.poster_path) return;
-
-    // Create the main card container
-    const movieCard = document.createElement('div');
-    movieCard.className = 'movie-card';
-    movieCard.onclick = () => showDetails(item);
-
-    // Get data with fallbacks
-    const title = item.title || item.name;
-    const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
-    const year = item.release_date ? item.release_date.substring(0, 4) : (item.first_air_date ? item.first_air_date.substring(0, 4) : '');
-    const description = item.overview;
-
-    // Use innerHTML to build the card structure
-    movieCard.innerHTML = `
-      <img src="${POSTER_URL}${item.poster_path}" alt="${title}" loading="lazy">
-      <div class="card-content">
-        <h3 class="card-title">${title}</h3>
-        <div class="card-meta">
-          <span class="rating">★ ${rating}</span>
-          <span class="year">${year}</span>
-        </div>
-        <p class="card-description">${description}</p>
-      </div>
+    const card = document.createElement('div');
+    card.className = 'movie-card';
+    card.innerHTML = `
+      <img src="${IMG_URL + item.poster_path}" alt="${item.title || item.name}">
+      <h4>${item.title || item.name}</h4>
     `;
-
-    container.appendChild(movieCard);
+    card.addEventListener('click', () => openModal(item));
+    container.appendChild(card);
   });
 }
 
-async function showDetails(item) {
-  currentItem = item;
-  const type = item.media_type === "movie" || item.release_date ? "movie" : "tv";
-
-  // Populate basic info immediately
-  document.getElementById('modal-title').textContent = item.title || item.name;
-  document.getElementById('modal-description').textContent = item.overview;
-  document.getElementById('modal-image').src = `${POSTER_URL}${item.poster_path}`;
-  document.getElementById('modal-rating').innerHTML = '★'.repeat(Math.round(item.vote_average / 2));
-
-  const watchButton = document.getElementById('watch-button');
-  watchButton.href = `watch.html?type=${type}&id=${item.id}`;
-
-  // Set loading text for dynamic content
-  const genresSpan = document.getElementById('modal-genres');
-  const castSpan = document.getElementById('modal-cast');
-  genresSpan.textContent = 'Loading...';
-  castSpan.textContent = 'Loading...';
-
-  // Look up and display genres
-  const genreMap = type === 'movie' ? movieGenres : tvGenres;
-  const genreNames = item.genre_ids.map(id => genreMap.get(id)).filter(Boolean); // filter(Boolean) removes any undefined genres
-  genresSpan.textContent = genreNames.join(', ') || 'N/A';
-
-  // Fetch credits to display cast
-  try {
-    const res = await fetch(`${BASE_URL}/${type}/${item.id}/credits`);
-    const creditsData = await res.json();
-    const castNames = creditsData.cast.slice(0, 4).map(actor => actor.name); // Get top 4 actors
-    castSpan.textContent = castNames.join(', ') || 'N/A';
-  } catch (error) {
-    console.error("Failed to fetch credits:", error);
-    castSpan.textContent = 'Could not load cast info.';
-  }
-
+// ==================== MODAL ====================
+function openModal(item) {
+  const isTV = item.first_air_date !== undefined;
+  document.getElementById('modal-title').innerText = item.title || item.name;
+  document.getElementById('modal-description').innerText = item.overview || 'No description available.';
+  document.getElementById('modal-image').src = IMG_URL + item.poster_path;
+  document.getElementById('modal-date').innerText = item.release_date || item.first_air_date || 'Unknown';
+  document.getElementById('modal-genres').innerText = 'Loading...';
+  document.getElementById('modal-rating').innerHTML = '⭐ ' + (item.vote_average ? item.vote_average.toFixed(1) : 'N/A') + '/10';
+  
+  const watchBtn = document.getElementById('watch-btn');
+  watchBtn.href = `watch.html?id=${item.id}&type=${isTV ? 'tv' : 'movie'}`;
+  
+  // Fetch genres
+  const type = isTV ? 'tv' : 'movie';
+  fetchData(`/${type}/${item.id}`).then(detail => {
+    if (detail.genres) {
+      document.getElementById('modal-genres').innerText = detail.genres.map(g => g.name).join(', ');
+    }
+  });
+  
   document.getElementById('modal').style.display = 'flex';
+}
+
+function openModalFromItem(item) {
+  openModal(item);
 }
 
 function closeModal() {
   document.getElementById('modal').style.display = 'none';
 }
 
+// ==================== SEARCH ====================
 function openSearchModal() {
   document.getElementById('search-modal').style.display = 'flex';
   document.getElementById('search-input').focus();
@@ -180,165 +154,85 @@ function openSearchModal() {
 function closeSearchModal() {
   document.getElementById('search-modal').style.display = 'none';
   document.getElementById('search-results').innerHTML = '';
-  document.getElementById('search-input').value = '';
 }
 
-function slide(listId, direction) {
-  const list = document.getElementById(listId);
-  if (!list) return;
-
-  // Calculate the amount to scroll. We'll scroll by 80% of the visible width.
-  const scrollAmount = list.clientWidth * 0.8;
-
-  if (direction === 'left') {
-    list.scrollBy({
-      left: -scrollAmount,
-      behavior: 'smooth'
-    });
-  } else {
-    list.scrollBy({
-      left: scrollAmount,
-      behavior: 'smooth'
-    });
-  }
-}
-
-// ===================================
-// BANNER SLIDER FUNCTIONS
-// ===================================
-
-function setupBannerSlider(movies) {
-  bannerSlidesData = movies.slice(0, 5); // Use the first 5 movies for the banner
-  const slidesContainer = document.getElementById('banner-slides');
-  const dotsContainer = document.getElementById('banner-dots');
-
-  // **Error prevention**: Check if elements exist
-  if (!slidesContainer || !dotsContainer) {
-    console.error("Banner slider HTML elements not found!");
+async function searchTMDB() {
+  const query = document.getElementById('search-input').value.trim();
+  const resultsContainer = document.getElementById('search-results');
+  
+  if (!query) {
+    resultsContainer.innerHTML = '';
     return;
   }
-
-  slidesContainer.innerHTML = '';
-  dotsContainer.innerHTML = '';
-
-  bannerSlidesData.forEach((movie, index) => {
-    // 1. Create the slide container
-    const slide = document.createElement('div');
-    slide.className = 'banner-slide';
-    slide.style.backgroundImage = `url(${BACKDROP_URL}${movie.backdrop_path})`;
-    
-    // 2. Create the content container for text and buttons
-    const content = document.createElement('div');
-    content.className = 'banner-content';
-
-    // 3. Create Title
-    const title = document.createElement('h1');
-    title.textContent = movie.title || movie.name;
-
-    // 4. Create Metadata (Year, Rating)
-    const meta = document.createElement('div');
-    meta.className = 'banner-meta';
-    const year = movie.release_date ? movie.release_date.substring(0, 4) : (movie.first_air_date ? movie.first_air_date.substring(0, 4) : 'N/A');
-    const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
-    meta.innerHTML = `<span>${year}</span> &bull; <span class="rating">★ ${rating}</span>`;
-
-    // 5. Create Description
-    const desc = document.createElement('p');
-    desc.className = 'banner-description';
-    desc.textContent = movie.overview;
-
-    // 6. Create Buttons
-    const buttons = document.createElement('div');
-    buttons.className = 'banner-buttons';
-
-    const playBtn = document.createElement('a');
-    playBtn.className = 'btn btn-primary';
-    playBtn.href = `watch.html?type=movie&id=${movie.id}`; // Assumes banner content is always 'movie'
-    playBtn.innerHTML = `<i class="fas fa-play"></i> Play Now`;
-
-    const infoBtn = document.createElement('button');
-    infoBtn.className = 'btn btn-secondary';
-    infoBtn.innerHTML = `<i class="fas fa-info-circle"></i> More Info`;
-    // When clicked, it calls the same function as clicking a poster
-    infoBtn.onclick = () => showDetails(movie);
-
-    // 7. Append everything together
-    buttons.append(playBtn, infoBtn);
-    content.append(title, meta, desc, buttons);
-    slide.appendChild(content);
-    slidesContainer.appendChild(slide);
-
-    // 8. Create Dot for navigation
-    const dot = document.createElement('div');
-    dot.className = 'banner-dot';
-    dot.addEventListener('click', () => goToSlide(index));
-    dotsContainer.appendChild(dot);
-  });
-
-  showSlide(0);
-  startBannerAutoplay();
-}
-
-function showSlide(index) {
-  const slidesContainer = document.getElementById('banner-slides');
-  if (!slidesContainer) return; // Add safety check
   
-  const dots = document.querySelectorAll('.banner-dot');
-  currentBannerIndex = index;
-  slidesContainer.style.transform = `translateX(-${index * 100}%)`;
-
-  dots.forEach((dot, i) => {
-    dot.classList.toggle('active', i === index);
+  const data = await fetchData(`/search/multi?query=${encodeURIComponent(query)}`);
+  resultsContainer.innerHTML = '';
+  
+  data.results.slice(0, 10).forEach(item => {
+    if (!item.media_type) return;
+    const resultItem = document.createElement('div');
+    resultItem.className = 'search-item';
+    resultItem.innerHTML = `
+      <img src="${IMG_URL + item.poster_path}" alt="${item.title || item.name}">
+      <div class="search-item-info">
+        <h4>${item.title || item.name}</h4>
+        <p>${item.media_type === 'movie' ? 'Movie' : 'TV Show'} • ${item.release_date || item.first_air_date || 'Unknown'}</p>
+      </div>
+    `;
+    resultItem.addEventListener('click', () => {
+      closeSearchModal();
+      openModal(item);
+    });
+    resultsContainer.appendChild(resultItem);
   });
 }
 
-// This new function is for the automatic timer ONLY
-function autoAdvanceSlide() {
-    const nextIndex = (currentBannerIndex + 1) % bannerSlidesData.length;
-    showSlide(nextIndex);
+// ==================== SLIDER ====================
+function setupSliderArrows() {
+  document.querySelectorAll('.slider-arrow').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const rowId = btn.getAttribute('data-row');
+      const container = document.getElementById(rowId);
+      if (!container) return;
+      const direction = btn.classList.contains('right') ? 300 : -300;
+      container.scrollBy({ left: direction, behavior: 'smooth' });
+    });
+  });
+  
+  document.getElementById('banner-prev')?.addEventListener('click', () => {
+    const total = document.querySelectorAll('.banner-slide').length;
+    if (total === 0) return;
+    currentBannerIndex = (currentBannerIndex - 1 + total) % total;
+    goToSlide(currentBannerIndex);
+  });
+  
+  document.getElementById('banner-next')?.addEventListener('click', () => {
+    const total = document.querySelectorAll('.banner-slide').length;
+    if (total === 0) return;
+    currentBannerIndex = (currentBannerIndex + 1) % total;
+    goToSlide(currentBannerIndex);
+  });
 }
 
-function goToSlide(index) {
-  showSlide(index);
-  resetBannerAutoplay();
-}
-
-function startBannerAutoplay() {
-  // Use the new auto-advance function for the timer
-  bannerInterval = setInterval(autoAdvanceSlide, 5000);
-}
-
-function resetBannerAutoplay() {
-  clearInterval(bannerInterval);
-  startBannerAutoplay();
-}
-
-// ===================================
-// INITIALIZATION
-// ===================================
-
-async function init() {
-  await fetchGenres(); // Fetch genres right at the start
-  try {
-    const movies = await fetchTrending('movie');
-    const tvShows = await fetchTrending('tv');
-    const anime = await fetchTrendingAnime();
-
-    if (movies && movies.length > 0) {
-      setupBannerSlider(movies);
-      displayList(movies, 'movies-list');
-    }
-    if (tvShows && tvShows.length > 0) {
-      displayList(tvShows, 'tvshows-list');
-    }
-    if (anime && anime.length > 0) {
-      displayList(anime, 'anime-list');
-    }
-  } catch (error) {
-    console.error("Failed to initialize page:", error);
-    // Optionally display an error message to the user on the page
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  loadBanner();
+  loadRows();
+  setupSliderArrows();
+  
+  // Search input
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      clearTimeout(currentSearchTimeout);
+      currentSearchTimeout = setTimeout(searchTMDB, 500);
+    });
   }
-}
+});
 
-// Run the app
-init();
+// Expose global functions
+window.openModalFromItem = openModalFromItem;
+window.closeModal = closeModal;
+window.openSearchModal = openSearchModal;
+window.closeSearchModal = closeSearchModal;
+window.searchTMDB = searchTMDB;
