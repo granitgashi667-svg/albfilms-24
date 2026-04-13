@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlbFilms24 | Discover Movies & TV Shows</title>
+    <title>AlbFilms24 | Filma & Seriale HD</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="css/home.css">
@@ -35,13 +35,14 @@
         </div>
         <div class="search-bar">
             <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search movies, TV shows...">
+            <input type="text" placeholder="Search movies, TV shows..." id="searchInput">
         </div>
     </div>
 </nav>
 
-<!-- HERO SECTION -->
-<section class="hero">
+<!-- HERO SECTION ME BACKGROUND VIDEO/IMAZH -->
+<section class="hero" id="hero">
+    <div class="hero-overlay"></div>
     <div class="hero-content">
         <h1>AlbFilms24</h1>
         <p>Your ultimate destination for discovering movies and TV shows. Stream, explore, and enjoy endless entertainment.</p>
@@ -50,13 +51,28 @@
             <button class="btn-info">Learn More</button>
         </div>
     </div>
+    <div class="hero-scroll">
+        <span>Scroll down</span>
+        <i class="fas fa-chevron-down"></i>
+    </div>
 </section>
+
+<!-- BANNER PËR REKLAMË -->
+<div class="ad-banner">
+    <div class="ad-content">
+        <i class="fas fa-bullhorn"></i>
+        <div class="ad-text">
+            <strong>Advertisement</strong> - Your business could be here! Contact us for promotions.
+        </div>
+        <button class="ad-close" onclick="this.parentElement.parentElement.style.display='none'">✕</button>
+    </div>
+</div>
 
 <!-- ROWS -->
 <div class="container">
     <div class="row">
         <div class="row-header">
-            <h2>Trending Now</h2>
+            <h2><i class="fas fa-fire"></i> Trending Now</h2>
             <a href="#" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
         </div>
         <div class="movies-row" id="trendingRow"></div>
@@ -64,7 +80,7 @@
 
     <div class="row">
         <div class="row-header">
-            <h2>Popular Movies</h2>
+            <h2><i class="fas fa-star"></i> Popular Movies</h2>
             <a href="#" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
         </div>
         <div class="movies-row" id="moviesRow"></div>
@@ -72,10 +88,18 @@
 
     <div class="row">
         <div class="row-header">
-            <h2>Popular TV Shows</h2>
+            <h2><i class="fas fa-tv"></i> Popular TV Shows</h2>
             <a href="#" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
         </div>
         <div class="movies-row" id="tvRow"></div>
+    </div>
+</div>
+
+<!-- NOTICE PËR VIZITORËT -->
+<div class="notice-board">
+    <div class="notice-content">
+        <i class="fas fa-info-circle"></i>
+        <p><strong>AlbFilms24</strong> është faqe e re dhe po punojmë çdo ditë të sjellim risi. Ju lutem të keni mirëkuptim! 🎬</p>
     </div>
 </div>
 
