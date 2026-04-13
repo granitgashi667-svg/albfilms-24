@@ -31,12 +31,21 @@
         .search-bar:focus-within { background: rgba(255,255,255,0.2); box-shadow: 0 0 8px rgba(229,9,14,0.3); }
         .search-bar i { color: #888; }
         .search-bar input { background: none; border: none; color: #fff; outline: none; width: 200px; font-size: 0.9rem; }
-        .hero { position: relative; height: 85vh; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); display: flex; align-items: center; justify-content: center; text-align: center; margin-top: 70px; }
-        .hero-content { max-width: 800px; padding: 2rem; }
+        
+        /* HERO SLIDER */
+        .hero { position: relative; height: 85vh; margin-top: 70px; overflow: hidden; }
+        .hero-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease-in-out; background-size: cover; background-position: center 30%; background-repeat: no-repeat; }
+        .hero-slide.active { opacity: 1; }
+        .hero-slide::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%); }
+        .hero-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 2; width: 100%; padding: 2rem; }
         .hero-content h1 { font-family: 'Orbitron', monospace; font-size: 4rem; margin-bottom: 1rem; background: linear-gradient(135deg, #fff, #e50914); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-content p { font-size: 1.2rem; margin-bottom: 2rem; color: #ddd; }
+        .hero-content p { font-size: 1.2rem; margin-bottom: 2rem; color: #ddd; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
         .btn-play { background: #e50914; color: #fff; padding: 0.8rem 2rem; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .btn-play:hover { background: #b20710; transform: scale(1.02); }
+        .hero-dots { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; z-index: 3; }
+        .dot { width: 10px; height: 10px; background: rgba(255,255,255,0.5); border-radius: 50%; cursor: pointer; transition: 0.3s; }
+        .dot.active { background: #e50914; width: 25px; border-radius: 10px; }
+        
         .container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
         .row { margin-bottom: 3rem; }
         .row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
@@ -67,7 +76,6 @@
         .modal-genres { margin-bottom: 1rem; color: #aaa; font-size: 0.85rem; }
         .modal-video-placeholder { background: #1a1a1a; border: 2px dashed #333; border-radius: 16px; padding: 1.2rem; text-align: center; margin-top: 1rem; }
         .modal-video-placeholder i { font-size: 2rem; color: #e50914; margin-bottom: 0.5rem; }
-        .modal-video-placeholder p { margin: 0.5rem 0; color: #888; font-size: 0.9rem; }
         .footer { background: #0a0a0a; border-top: 1px solid #1f1f1f; margin-top: 4rem; padding: 3rem 2rem 1.5rem; text-align: center; }
         .footer p { color: #666; font-size: 0.8rem; }
         @media (max-width: 768px) { .hero-content h1 { font-size: 2.5rem; } .movie-card { min-width: 140px; } .modal-body { flex-direction: column; align-items: center; text-align: center; } .modal-body img { width: 200px; } }
@@ -85,7 +93,7 @@
             <a href="index.html">Home</a>
             <div class="dropdown" id="genreDropdown">
                 <button class="dropbtn" id="dropbtn">Movies <i class="fas fa-chevron-down"></i></button>
-                <div class="dropdown-content" id="genreMenu">
+                <div class="dropdown-content">
                     <a href="#" data-genre="28"><i class="fas fa-fist-raised"></i> Aksion</a>
                     <a href="#" data-genre="18"><i class="fas fa-theater-masks"></i> Dramë</a>
                     <a href="#" data-genre="35"><i class="fas fa-laugh"></i> Komedi</a>
@@ -99,13 +107,20 @@
     </div>
 </nav>
 
-<section class="hero">
+<!-- HERO SLIDER -->
+<div class="hero" id="heroSlider">
+    <div class="hero-slide active" style="background-image: url('https://image.tmdb.org/t/p/original/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg');"></div>
+    <div class="hero-slide" style="background-image: url('https://image.tmdb.org/t/p/original/qJ2tW6WMUDux911r6m7haRef0WH.jpg');"></div>
+    <div class="hero-slide" style="background-image: url('https://image.tmdb.org/t/p/original/8WrWjJkzP6ZvK7j8QnL9mKxYz5V.jpg');"></div>
+    <div class="hero-slide" style="background-image: url('https://image.tmdb.org/t/p/original/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg');"></div>
+    <div class="hero-slide" style="background-image: url('https://image.tmdb.org/t/p/original/3bhkrj58Vtu7enYsRolD1fZdja1.jpg');"></div>
     <div class="hero-content">
         <h1>AlbFilms24</h1>
         <p>Destinacioni yt për filma dhe seriale HD. Eksploro dhe shijo!</p>
-        <button class="btn-play"><i class="fas fa-play"></i> Fillo Eksplorimin</button>
+        <button class="btn-play" onclick="document.querySelector('.container').scrollIntoView({behavior:'smooth'})"><i class="fas fa-play"></i> Fillo Eksplorimin</button>
     </div>
-</section>
+    <div class="hero-dots" id="heroDots"></div>
+</div>
 
 <div class="container">
     <div class="row"><div class="row-header"><h2><i class="fas fa-fire"></i> Trending Now</h2></div><div class="movies-row" id="trendingRow"></div></div>
@@ -127,11 +142,9 @@
     const IMG_URL = 'https://image.tmdb.org/t/p/w500';
     const LANGUAGE = 'en-US';
 
-    // ==================== LISTAT E ID-ve ====================
     const MOVIES = [278, 238, 155, 680, 27205, 13, 603, 769, 98, 597];
     const TV_SHOWS = [1396, 1435, 124998, 1399, 44217, 1392, 66732, 60573, 71912, 4629];
 
-    // ==================== PËRSHKRIMET E PËRKT HYERA NË SHQIP PËR FILMAT ====================
     const movieDescriptions = {
         278: "Dy të burgosur krijuan një lidhje të jashtëzakonshme gjatë dekadave në burg, duke gjetur shpresë dhe shpengim përmes miqësisë së tyre.",
         238: "Familja kriminale më e fuqishme në New York përballet me sfida kur patriarku kërkon të transferojë pushtetin te djali i tij më i vogël.",
@@ -213,6 +226,38 @@
         }));
         renderRow('trendingRow', results);
     }
+
+    // SLIDER LOGJIKA
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.hero-slide');
+    const dotsContainer = document.getElementById('heroDots');
+    
+    function createDots() {
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (i === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        });
+    }
+    
+    function goToSlide(index) {
+        slides[currentSlide].classList.remove('active');
+        document.querySelectorAll('.dot')[currentSlide].classList.remove('active');
+        currentSlide = index;
+        slides[currentSlide].classList.add('active');
+        document.querySelectorAll('.dot')[currentSlide].classList.add('active');
+    }
+    
+    function nextSlide() {
+        let next = currentSlide + 1;
+        if (next >= slides.length) next = 0;
+        goToSlide(next);
+    }
+    
+    createDots();
+    setInterval(nextSlide, 5000);
 
     document.addEventListener('DOMContentLoaded', () => {
         loadMovies();
