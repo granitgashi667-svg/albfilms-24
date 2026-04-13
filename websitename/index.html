@@ -1,144 +1,132 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlbFilms24 | Filma & Seriale HD</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="css/home.css">
-    <script defer src="js/home.js"></script>
-</head>
-<body>
+// ==================== TMDB CONFIG ====================
+const API_KEY = '7a98db423d6e3a5ee922a3e51a09d135';
+const BASE_URL = 'https://api.themoviedb.org/3';
+const IMG_URL = 'https://image.tmdb.org/t/p/w500';
+const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
 
-<!-- NAVBAR -->
-<nav class="navbar">
-    <div class="nav-container">
-        <a href="index.html" class="logo">
-            <i class="fas fa-film"></i>
-            <span>AlbFilms24</span>
-        </a>
-        <div class="nav-links">
-            <a href="index.html" class="active">Home</a>
-            <div class="dropdown">
-                <button class="dropbtn">Browse <i class="fas fa-chevron-down"></i></button>
-                <div class="dropdown-content">
-                    <a href="#">Movies</a>
-                    <a href="#">TV Shows</a>
-                    <a href="#">Anime</a>
-                    <a href="#">My Library</a>
-                </div>
-            </div>
-            <a href="#">Movies</a>
-            <a href="#">TV Shows</a>
-            <a href="#">Anime</a>
-        </div>
-        <div class="search-bar">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search movies, TV shows..." id="searchInput">
-        </div>
-    </div>
-</nav>
+// ==================== LISTA E FILMAVE DEMO ====================
+// Ti do t'i zëvendësosh këto ID me ato të filmave të tu
+const MY_MOVIES = [27205, 155, 49026, 238, 680]; // Inception, Dark Knight, Interstellar, Godfather, Pulp Fiction
+const MY_TV_SHOWS = [1396, 1399, 106459]; // Breaking Bad, Stranger Things, Narcos
 
-<!-- HERO SECTION ME BACKGROUND VIDEO/IMAZH -->
-<section class="hero" id="hero">
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-        <h1>AlbFilms24</h1>
-        <p>Your ultimate destination for discovering movies and TV shows. Stream, explore, and enjoy endless entertainment.</p>
-        <div class="hero-buttons">
-            <button class="btn-play" id="heroPlayBtn"><i class="fas fa-play"></i> Start Exploring</button>
-            <button class="btn-info">Learn More</button>
-        </div>
-    </div>
-    <div class="hero-scroll">
-        <span>Scroll down</span>
-        <i class="fas fa-chevron-down"></i>
-    </div>
-</section>
+// ==================== FUNKSIONET ====================
+async function fetchMovieById(id) {
+    const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=en-US`);
+    const data = await res.json();
+    return {
+        id: data.id,
+        title: data.title,
+        year: data.release_date ? data.release_date.split('-')[0] : 'N/A',
+        rating: data.vote_average ? data.vote_average.toFixed(1) : 'N/A',
+        poster: data.poster_path ? IMG_URL + data.poster_path : 'https://placehold.co/500x750/1a1a1a/e50914?text=No+Poster',
+        overview: data.overview || 'No description available.',
+        genres: data.genres ? data.genres.map(g => g.name).join(', ') : 'N/A'
+    };
+}
 
-<!-- BANNER PËR REKLAMË -->
-<div class="ad-banner">
-    <div class="ad-content">
-        <i class="fas fa-bullhorn"></i>
-        <div class="ad-text">
-            <strong>Advertisement</strong> - Your business could be here! Contact us for promotions.
-        </div>
-        <button class="ad-close" onclick="this.parentElement.parentElement.style.display='none'">✕</button>
-    </div>
-</div>
+async function fetchTvById(id) {
+    const res = await fetch(`${BASE_URL}/tv/${id}?api_key=${API_KEY}&language=en-US`);
+    const data = await res.json();
+    return {
+        id: data.id,
+        title: data.name,
+        year: data.first_air_date ? data.first_air_date.split('-')[0] : 'N/A',
+        rating: data.vote_average ? data.vote_average.toFixed(1) : 'N/A',
+        poster: data.poster_path ? IMG_URL + data.poster_path : 'https://placehold.co/500x750/1a1a1a/e50914?text=No+Poster',
+        overview: data.overview || 'No description available.',
+        genres: data.genres ? data.genres.map(g => g.name).join(', ') : 'N/A'
+    };
+}
 
-<!-- ROWS -->
-<div class="container">
-    <div class="row">
-        <div class="row-header">
-            <h2><i class="fas fa-fire"></i> Trending Now</h2>
-            <a href="#" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
+function renderRow(containerId, items) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    container.innerHTML = items.map(item => `
+        <div class="movie-card" onclick="openMovieModal(${item.id}, '${item.type}')">
+            <img src="${item.poster}" alt="${item.title}">
+            <h4>${item.title} (${item.year})</h4>
+            <p class="rating">⭐ ${item.rating}/10</p>
         </div>
-        <div class="movies-row" id="trendingRow"></div>
-    </div>
+    `).join('');
+}
 
-    <div class="row">
-        <div class="row-header">
-            <h2><i class="fas fa-star"></i> Popular Movies</h2>
-            <a href="#" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
-        </div>
-        <div class="movies-row" id="moviesRow"></div>
-    </div>
+async function loadMovies() {
+    // Trending (të parët nga MY_MOVIES)
+    const trendingMovies = await Promise.all(MY_MOVIES.slice(0, 6).map(id => fetchMovieById(id)));
+    trendingMovies.forEach(m => m.type = 'movie');
+    renderRow('trendingRow', trendingMovies);
+    
+    // Movies
+    const movies = await Promise.all(MY_MOVIES.map(id => fetchMovieById(id)));
+    movies.forEach(m => m.type = 'movie');
+    renderRow('moviesRow', movies);
+    
+    // TV Shows
+    const tvShows = await Promise.all(MY_TV_SHOWS.map(id => fetchTvById(id)));
+    tvShows.forEach(t => t.type = 'tv');
+    renderRow('tvRow', tvShows);
+}
 
-    <div class="row">
-        <div class="row-header">
-            <h2><i class="fas fa-tv"></i> Popular TV Shows</h2>
-            <a href="#" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
-        </div>
-        <div class="movies-row" id="tvRow"></div>
-    </div>
-</div>
+// MODAL FUNCTIONS
+function openMovieModal(id, type) {
+    const modal = document.getElementById('movieModal');
+    document.getElementById('modalTitle').innerText = 'Loading...';
+    document.getElementById('modalOverview').innerText = '';
+    document.getElementById('modalImage').src = 'https://placehold.co/500x750/1a1a1a/e50914?text=Loading';
+    modal.style.display = 'flex';
+    
+    const fetchFunc = type === 'tv' ? fetchTvById : fetchMovieById;
+    fetchFunc(id).then(item => {
+        document.getElementById('modalTitle').innerText = item.title;
+        document.getElementById('modalYear').innerHTML = `<i class="fas fa-calendar"></i> ${item.year}`;
+        document.getElementById('modalRating').innerHTML = `<i class="fas fa-star" style="color:#ffc107;"></i> ${item.rating}/10`;
+        document.getElementById('modalOverview').innerText = item.overview;
+        document.getElementById('modalGenres').innerHTML = `<i class="fas fa-tags"></i> ${item.genres}`;
+        document.getElementById('modalImage').src = item.poster;
+    }).catch(err => {
+        document.getElementById('modalTitle').innerText = 'Error loading movie';
+        console.error(err);
+    });
+}
 
-<!-- NOTICE PËR VIZITORËT -->
-<div class="notice-board">
-    <div class="notice-content">
-        <i class="fas fa-info-circle"></i>
-        <p><strong>AlbFilms24</strong> është faqe e re dhe po punojmë çdo ditë të sjellim risi. Ju lutem të keni mirëkuptim! 🎬</p>
-    </div>
-</div>
+function closeModal() {
+    document.getElementById('movieModal').style.display = 'none';
+}
 
-<!-- FOOTER -->
-<footer class="footer">
-    <div class="footer-container">
-        <div class="footer-section">
-            <h3>AlbFilms24</h3>
-            <p>Your ultimate destination for discovering movies and TV shows. Stream, explore, and enjoy endless entertainment.</p>
-        </div>
-        <div class="footer-section">
-            <h4>Browse</h4>
-            <ul>
-                <li><a href="#">Movies</a></li>
-                <li><a href="#">TV Shows</a></li>
-                <li><a href="#">Anime</a></li>
-                <li><a href="#">My Library</a></li>
-                <li><a href="#">Search</a></li>
-            </ul>
-        </div>
-        <div class="footer-section">
-            <h4>Information</h4>
-            <ul>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
-                <li><a href="#">Contact Us</a></li>
-                <li><a href="#">About</a></li>
-            </ul>
-        </div>
-        <div class="footer-section">
-            <h4>Important Notice</h4>
-            <p>AlbFilms24 does not host or store any media files. All content is sourced from third-party services and platforms. We respect intellectual property rights and comply with DMCA regulations.</p>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>© 2025 AlbFilms24. All rights reserved.</p>
-        <p>Made with <i class="fas fa-heart" style="color: #e50914;"></i> for movie lovers • Version 1.0 ⟳</p>
-    </div>
-</footer>
+// KËRKIMI
+async function searchTMDB(query) {
+    if (!query || query.length < 2) {
+        loadMovies();
+        return;
+    }
+    const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
+    const data = await res.json();
+    const results = data.results.slice(0, 10).map(item => ({
+        id: item.id,
+        title: item.title || item.name,
+        year: (item.release_date || item.first_air_date || '').split('-')[0] || 'N/A',
+        rating: item.vote_average ? item.vote_average.toFixed(1) : 'N/A',
+        poster: item.poster_path ? IMG_URL + item.poster_path : 'https://placehold.co/500x750/1a1a1a/e50914?text=No+Poster',
+        type: item.media_type === 'tv' ? 'tv' : 'movie'
+    }));
+    renderRow('trendingRow', results);
+}
 
-</body>
-</html>
+// EVENTET
+document.addEventListener('DOMContentLoaded', () => {
+    loadMovies();
+    
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        let timeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => searchTMDB(e.target.value.trim()), 500);
+        });
+    }
+});
+
+// Ekspozo funksionet globalisht
+window.openMovieModal = openMovieModal;
+window.closeModal = closeModal;
