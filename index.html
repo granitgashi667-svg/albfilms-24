@@ -28,7 +28,6 @@
         .dropdown-content a:hover { background: #e50914; border-left-color: #fff; }
         .dropdown.active .dropdown-content { display: block; }
         
-        /* SEARCH DROPDOWN */
         .search-wrapper { position: relative; }
         .search-bar { display: flex; align-items: center; background: rgba(255,255,255,0.1); border-radius: 40px; padding: 0.5rem 1rem; gap: 0.5rem; transition: 0.3s; width: 260px; }
         .search-bar:focus-within { background: rgba(255,255,255,0.2); box-shadow: 0 0 8px rgba(229,9,14,0.3); }
@@ -162,42 +161,53 @@
     const IMG_URL = 'https://image.tmdb.org/t/p/w500';
     const LANGUAGE = 'en-US';
 
-    // ==================== LISTAT E FILMAVE DHE SERIALEVE ====================
-    const MOVIES = [278, 238, 155, 680, 27205, 13, 603, 769, 98, 597];
-    const TV_SHOWS = [1396, 1435, 124998, 1399, 44217, 1392, 66732, 60573, 71912, 4629];
+    // ==================== LISTAT E FILMAVE (ID-të e TMDB) ====================
+    // Për filmat që nuk i gjen dot, mund t'i kërkosh manualisht në TMDB
+    const MOVIES = [27205, 238, 155]; // Inception, Godfather, Dark Knight (shembull)
+    
+    // ==================== SERIALET ====================
+    const TV_SHOWS = [1396, 1399]; // Breaking Bad, Stranger Things (shembull)
 
     // ==================== LINKET E VIDEOVE NGA ABYSS ====================
-    // Këtu do të vendosësh ID-të e tua nga Abyss (slug) dhe linkun e plotë
-    // Shembull: "YYmY8Qy-M": "https://abyss.to/v/YYmY8Qy-M"
+    // Formati: "tmdb_id": "https://abyss.to/v/slug_i_abyss"
+    // Për filmat që nuk kanë ID TMDB, do të shfaqen vetëm me linkun e Abyss
     const videoLinks = {
-        // Shto këtu filmat e tu nga Abyss
-        // "slug_i_filmit": "https://abyss.to/v/slug_i_filmit",
+        // "27205": "https://abyss.to/v/YYmY8Qy-M",  // Shembull: Inception
+        // Shto këtu filmat e tu:
+        "27205": "https://abyss.to/v/YYmY8Qy-M",  // 14 Days
+        // "ID_TJETER": "https://abyss.to/v/44qkCuGWS",  // Believe
+        // "ID_TJETER": "https://abyss.to/v/-wV45QMMK",  // Chhava
+        // "ID_TJETER": "https://abyss.to/v/t3WJQtN4d",  // Die My Love
     };
 
     // Përshkrimet në shqip për filmat (për ata që nuk kanë nga TMDB)
     const movieDescriptions = {
-        278: "Dy të burgosur krijuan një lidhje të jashtëzakonshme gjatë dekadave në burg, duke gjetur shpresë dhe shpengim përmes miqësisë së tyre.",
-        238: "Familja kriminale më e fuqishme në New York përballet me sfida kur patriarku kërkon të transferojë pushtetin te djali i tij më i vogël.",
-        155: "Batman përballet me Jokerin, një kriminel që synon të shkatërrojë rendin në Gotham dhe të provojë se çdokush mund të korruptohet.",
-        680: "Historitë e ndërthurura të dy vrasësve, një boksieri dhe një çifti grabitësish në Los Angeles të viteve '90.",
         27205: "Një hajdut pushton ëndrrat e njerëzve për të vjedhur sekrete korporative, por rrezikon të humbasë veten në realitet.",
-        13: "Një burrë me IQ të ulët bëhet dëshmitar i disa prej ngjarjeve më historike të shekullit të 20-të në Amerikë.",
-        603: "Një programues zbulon se realiteti që jeton është një simulim dhe bashkohet me rebelët për të luftuar kundër makinave.",
-        769: "Rritja dhe rënia e një gangsteri në mafian e New York-ut, treguar përmes syve të tij dhe të shokëve të tij.",
-        98: "Një gjeneral romak skllavërohet dhe bëhet gladiator për t'u hakmarrë ndaj perandorit që i vrau familjen.",
-        597: "Një artist i ri dhe një grua e klasës së lartë bien në dashuri në bordin e anijes së famshme 'Titanic'."
+        238: "Familja kriminale më e fuqishme në New York përballet me sfida kur patriarku kërkon të transferojë pushtetin te djali i tij më i vogël.",
+        155: "Batman përballet me Jokerin, një kriminel që synon të shkatërrojë rendin në Gotham dhe të provojë se çdokush mund të korruptohet."
     };
 
     async function fetchMovieById(id) {
-        const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=${LANGUAGE}`);
-        const data = await res.json();
-        return {
-            id: data.id, title: data.title, year: data.release_date ? data.release_date.split('-')[0] : 'N/A',
-            rating: data.vote_average ? data.vote_average.toFixed(1) : 'N/A',
-            poster: data.poster_path ? IMG_URL + data.poster_path : 'https://placehold.co/500x750/1a1a1a/e50914?text=No+Poster',
-            overview: movieDescriptions[id] || data.overview || 'Përshkrimi nuk është i disponueshëm.',
-            genres: data.genres ? data.genres.map(g => g.name).join(', ') : 'N/A'
-        };
+        try {
+            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=${LANGUAGE}`);
+            if (!res.ok) throw new Error('Movie not found');
+            const data = await res.json();
+            return {
+                id: data.id, title: data.title, year: data.release_date ? data.release_date.split('-')[0] : 'N/A',
+                rating: data.vote_average ? data.vote_average.toFixed(1) : 'N/A',
+                poster: data.poster_path ? IMG_URL + data.poster_path : 'https://placehold.co/500x750/1a1a1a/e50914?text=No+Poster',
+                overview: movieDescriptions[id] || data.overview || 'Përshkrimi nuk është i disponueshëm.',
+                genres: data.genres ? data.genres.map(g => g.name).join(', ') : 'N/A'
+            };
+        } catch (error) {
+            return {
+                id: id, title: 'ID e panjohur: ' + id, year: 'N/A',
+                rating: 'N/A',
+                poster: 'https://placehold.co/500x750/1a1a1a/e50914?text=ID+Not+Found',
+                overview: 'Kjo ID nuk u gjet në TMDB. Kontrollo nëse është e saktë.',
+                genres: 'N/A'
+            };
+        }
     }
 
     async function fetchTvById(id) {
@@ -261,7 +271,6 @@
 
     window.closeModal = function() { document.getElementById('movieModal').style.display = 'none'; };
 
-    // KËRKIMI ME DROPDOWN
     async function searchAndShow(query) {
         const dropdown = document.getElementById('searchDropdown');
         if (!query || query.length < 2) {
@@ -321,7 +330,6 @@
     });
     document.addEventListener('click', () => dropdownGenre.classList.remove('active'));
 
-    // Mbyll dropdown-in e kërkimit kur klikon jashtë
     document.addEventListener('click', (e) => {
         const wrapper = document.querySelector('.search-wrapper');
         if (!wrapper.contains(e.target)) {
