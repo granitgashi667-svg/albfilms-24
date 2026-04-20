@@ -27,10 +27,22 @@
         .dropdown-content a i { width: 24px; color: #e50914; }
         .dropdown-content a:hover { background: #e50914; border-left-color: #fff; }
         .dropdown.active .dropdown-content { display: block; }
-        .search-bar { display: flex; align-items: center; background: rgba(255,255,255,0.1); border-radius: 40px; padding: 0.5rem 1rem; gap: 0.5rem; transition: 0.3s; }
+        
+        /* SEARCH DROPDOWN */
+        .search-wrapper { position: relative; }
+        .search-bar { display: flex; align-items: center; background: rgba(255,255,255,0.1); border-radius: 40px; padding: 0.5rem 1rem; gap: 0.5rem; transition: 0.3s; width: 260px; }
         .search-bar:focus-within { background: rgba(255,255,255,0.2); box-shadow: 0 0 8px rgba(229,9,14,0.3); }
         .search-bar i { color: #888; }
-        .search-bar input { background: none; border: none; color: #fff; outline: none; width: 200px; font-size: 0.9rem; }
+        .search-bar input { background: none; border: none; color: #fff; outline: none; width: 100%; font-size: 0.9rem; }
+        .search-dropdown { position: absolute; top: 50px; right: 0; width: 320px; background: #141414; border-radius: 16px; border: 1px solid #333; max-height: 400px; overflow-y: auto; display: none; z-index: 1002; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .search-dropdown.show { display: block; }
+        .search-item { display: flex; align-items: center; gap: 12px; padding: 10px 15px; cursor: pointer; transition: 0.2s; border-bottom: 1px solid #222; }
+        .search-item:hover { background: #e50914; }
+        .search-item img { width: 40px; height: 60px; object-fit: cover; border-radius: 6px; }
+        .search-item-info h4 { font-size: 0.9rem; margin-bottom: 2px; }
+        .search-item-info p { font-size: 0.7rem; color: #aaa; }
+        .search-item:hover .search-item-info p { color: #fff; }
+        
         .hero { position: relative; height: 85vh; margin-top: 70px; overflow: hidden; }
         .hero-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease-in-out; background-size: cover; background-position: center 30%; background-repeat: no-repeat; }
         .hero-slide.active { opacity: 1; }
@@ -74,11 +86,9 @@
         .modal-video-placeholder { background: #1a1a1a; border: 2px dashed #333; border-radius: 16px; padding: 1.2rem; text-align: center; margin-top: 1rem; }
         .modal-video-placeholder i { font-size: 2rem; color: #e50914; margin-bottom: 0.5rem; }
         .modal-video-placeholder a { color: #e50914; text-decoration: none; font-weight: 500; display: inline-block; margin-top: 8px; }
-        .modal-video-placeholder a:hover { text-decoration: underline; }
         .footer { background: #0a0a0a; border-top: 1px solid #1f1f1f; margin-top: 4rem; padding: 3rem 2rem 1.5rem; text-align: center; }
         .footer p { color: #666; font-size: 0.8rem; }
-        .no-results { text-align: center; padding: 2rem; color: #888; font-size: 1.1rem; }
-        @media (max-width: 768px) { .hero-content h1 { font-size: 2.5rem; } .movie-card { min-width: 140px; } .modal-body { flex-direction: column; align-items: center; text-align: center; } .modal-body img { width: 200px; } .dropdown-content { position: fixed; top: auto; left: 1rem; right: 1rem; width: auto; } }
+        @media (max-width: 768px) { .hero-content h1 { font-size: 2.5rem; } .movie-card { min-width: 140px; } .modal-body { flex-direction: column; align-items: center; text-align: center; } .modal-body img { width: 200px; } .search-dropdown { width: 280px; right: -10px; } }
     </style>
 </head>
 <body>
@@ -111,7 +121,10 @@
             </div>
             <a href="#">TV Shows</a>
         </div>
-        <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Kërko film..." id="searchInput"></div>
+        <div class="search-wrapper">
+            <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Kërko film..." id="searchInput" autocomplete="off"></div>
+            <div class="search-dropdown" id="searchDropdown"></div>
+        </div>
     </div>
 </nav>
 
@@ -149,17 +162,19 @@
     const IMG_URL = 'https://image.tmdb.org/t/p/w500';
     const LANGUAGE = 'en-US';
 
-    // Listat e filmave dhe serialeve
+    // ==================== LISTAT E FILMAVE DHE SERIALEVE ====================
     const MOVIES = [278, 238, 155, 680, 27205, 13, 603, 769, 98, 597];
     const TV_SHOWS = [1396, 1435, 124998, 1399, 44217, 1392, 66732, 60573, 71912, 4629];
 
-    // Linket e videove demo (vetëm për testim)
+    // ==================== LINKET E VIDEOVE NGA ABYSS ====================
+    // Këtu do të vendosësh ID-të e tua nga Abyss (slug) dhe linkun e plotë
+    // Shembull: "YYmY8Qy-M": "https://abyss.to/v/YYmY8Qy-M"
     const videoLinks = {
-        27205: "https://www.youtube.com/embed/8hP9D6kZseM", // Inception - trailer
-        155: "https://www.youtube.com/embed/EXeTwQWrcwY",   // Dark Knight - trailer
-        238: "https://www.youtube.com/embed/sY1S34973zA"    // Godfather - trailer
+        // Shto këtu filmat e tu nga Abyss
+        // "slug_i_filmit": "https://abyss.to/v/slug_i_filmit",
     };
 
+    // Përshkrimet në shqip për filmat (për ata që nuk kanë nga TMDB)
     const movieDescriptions = {
         278: "Dy të burgosur krijuan një lidhje të jashtëzakonshme gjatë dekadave në burg, duke gjetur shpresë dhe shpengim përmes miqësisë së tyre.",
         238: "Familja kriminale më e fuqishme në New York përballet me sfida kur patriarku kërkon të transferojë pushtetin te djali i tij më i vogël.",
@@ -219,6 +234,7 @@
 
     window.resetToTrending = function() {
         document.getElementById('searchInput').value = '';
+        document.getElementById('searchDropdown').classList.remove('show');
         loadMovies();
     };
 
@@ -235,14 +251,9 @@
         document.getElementById('modalGenres').innerHTML = `<i class="fas fa-tags"></i> ${item.genres}`;
         document.getElementById('modalImage').src = item.poster;
         
-        // Shto linkun e videos nëse ekziston
         const videoPlaceholder = document.getElementById('videoPlaceholder');
         if (videoLinks[id]) {
-            videoPlaceholder.innerHTML = `
-                <i class="fas fa-play-circle"></i>
-                <p>Shiko trailerin:</p>
-                <a href="${videoLinks[id]}" target="_blank">Kliko për të parë trailerin</a>
-            `;
+            videoPlaceholder.innerHTML = `<i class="fas fa-play-circle"></i><p>Shiko filmin:</p><a href="${videoLinks[id]}" target="_blank">Kliko për të parë</a>`;
         } else {
             videoPlaceholder.innerHTML = `<i class="fas fa-video"></i><p>Linku i videos do të shtohet së shpejti</p>`;
         }
@@ -250,41 +261,32 @@
 
     window.closeModal = function() { document.getElementById('movieModal').style.display = 'none'; };
 
-    // KËRKIMI I PËRMIRËSUAR (gjen edhe nga lista lokale)
-    async function searchTMDB(query) {
-        if (!query || query.length < 1) { 
-            loadMovies(); 
-            return; 
-        }
-        
-        const searchTerm = query.toLowerCase();
-        
-        // Kërko fillimisht në listën lokale të filmave
-        const localMovies = await Promise.all(MOVIES.map(id => fetchMovieById(id)));
-        const localResults = localMovies.filter(movie => 
-            movie.title.toLowerCase().includes(searchTerm)
-        );
-        
-        if (localResults.length > 0) {
-            localResults.forEach(m => m.type = 'movie');
-            renderRow('trendingRow', localResults.slice(0, 10));
-            renderRow('moviesRow', []);
-            renderRow('tvRow', []);
+    // KËRKIMI ME DROPDOWN
+    async function searchAndShow(query) {
+        const dropdown = document.getElementById('searchDropdown');
+        if (!query || query.length < 2) {
+            dropdown.classList.remove('show');
             return;
         }
         
-        // Nëse nuk gjendet lokal, kërko te TMDB
-        const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=${LANGUAGE}`);
-        const data = await res.json();
-        const results = data.results.slice(0, 10).map(item => ({
-            id: item.id, title: item.title || item.name, year: (item.release_date || item.first_air_date || '').split('-')[0] || 'N/A',
-            rating: item.vote_average ? item.vote_average.toFixed(1) : 'N/A',
-            poster: item.poster_path ? IMG_URL + item.poster_path : 'https://placehold.co/500x750/1a1a1a/e50914?text=No+Poster',
-            type: item.media_type === 'tv' ? 'tv' : 'movie'
-        }));
-        renderRow('trendingRow', results);
-        renderRow('moviesRow', []);
-        renderRow('tvRow', []);
+        const searchTerm = query.toLowerCase();
+        const localMovies = await Promise.all(MOVIES.map(id => fetchMovieById(id)));
+        const results = localMovies.filter(movie => movie.title.toLowerCase().includes(searchTerm));
+        
+        if (results.length > 0) {
+            dropdown.innerHTML = results.slice(0, 8).map(movie => `
+                <div class="search-item" onclick="openMovieModal(${movie.id}, 'movie'); document.getElementById('searchDropdown').classList.remove('show'); document.getElementById('searchInput').value = '';">
+                    <img src="${movie.poster}" alt="${movie.title}">
+                    <div class="search-item-info">
+                        <h4>${movie.title}</h4>
+                        <p>${movie.year} • ⭐ ${movie.rating}/10</p>
+                    </div>
+                </div>
+            `).join('');
+            dropdown.classList.add('show');
+        } else {
+            dropdown.classList.remove('show');
+        }
     }
 
     async function filterByGenre(genreId) {
@@ -311,13 +313,21 @@
         });
     });
 
-    const dropdown = document.getElementById('genreDropdown');
+    const dropdownGenre = document.getElementById('genreDropdown');
     const dropbtn = document.getElementById('dropbtn');
     dropbtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        dropdown.classList.toggle('active');
+        dropdownGenre.classList.toggle('active');
     });
-    document.addEventListener('click', () => dropdown.classList.remove('active'));
+    document.addEventListener('click', () => dropdownGenre.classList.remove('active'));
+
+    // Mbyll dropdown-in e kërkimit kur klikon jashtë
+    document.addEventListener('click', (e) => {
+        const wrapper = document.querySelector('.search-wrapper');
+        if (!wrapper.contains(e.target)) {
+            document.getElementById('searchDropdown').classList.remove('show');
+        }
+    });
 
     let currentSlide = 0;
     const slides = document.querySelectorAll('.hero-slide');
@@ -334,7 +344,7 @@
             let timeout;
             searchInput.addEventListener('input', (e) => {
                 clearTimeout(timeout);
-                timeout = setTimeout(() => searchTMDB(e.target.value.trim()), 300);
+                timeout = setTimeout(() => searchAndShow(e.target.value.trim()), 200);
             });
         }
     });
