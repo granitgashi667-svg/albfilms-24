@@ -73,6 +73,8 @@
         .modal-genres { margin-bottom: 1rem; color: #aaa; font-size: 0.85rem; }
         .modal-video-placeholder { background: #1a1a1a; border: 2px dashed #333; border-radius: 16px; padding: 1.2rem; text-align: center; margin-top: 1rem; }
         .modal-video-placeholder i { font-size: 2rem; color: #e50914; margin-bottom: 0.5rem; }
+        .modal-video-placeholder a { color: #e50914; text-decoration: none; font-weight: 500; display: inline-block; margin-top: 8px; }
+        .modal-video-placeholder a:hover { text-decoration: underline; }
         .footer { background: #0a0a0a; border-top: 1px solid #1f1f1f; margin-top: 4rem; padding: 3rem 2rem 1.5rem; text-align: center; }
         .footer p { color: #666; font-size: 0.8rem; }
         .no-results { text-align: center; padding: 2rem; color: #888; font-size: 1.1rem; }
@@ -135,7 +137,7 @@
 
 <div class="modal" id="movieModal">
     <div class="modal-content"><span class="close-modal" onclick="closeModal()">&times;</span>
-        <div class="modal-body"><img id="modalImage"><div class="modal-info"><h2 id="modalTitle"></h2><div class="modal-meta"><span id="modalYear"></span><span id="modalRating"></span></div><p id="modalOverview"></p><div class="modal-genres" id="modalGenres"></div><div class="modal-video-placeholder"><i class="fas fa-video"></i><p>Linku i videos do të shtohet së shpejti</p></div></div></div>
+        <div class="modal-body"><img id="modalImage"><div class="modal-info"><h2 id="modalTitle"></h2><div class="modal-meta"><span id="modalYear"></span><span id="modalRating"></span></div><p id="modalOverview"></p><div class="modal-genres" id="modalGenres"></div><div class="modal-video-placeholder" id="videoPlaceholder"><i class="fas fa-video"></i><p>Linku i videos do të shtohet së shpejti</p></div></div></div>
     </div>
 </div>
 
@@ -147,8 +149,16 @@
     const IMG_URL = 'https://image.tmdb.org/t/p/w500';
     const LANGUAGE = 'en-US';
 
+    // Listat e filmave dhe serialeve
     const MOVIES = [278, 238, 155, 680, 27205, 13, 603, 769, 98, 597];
     const TV_SHOWS = [1396, 1435, 124998, 1399, 44217, 1392, 66732, 60573, 71912, 4629];
+
+    // Linket e videove demo (vetëm për testim)
+    const videoLinks = {
+        27205: "https://www.youtube.com/embed/8hP9D6kZseM", // Inception - trailer
+        155: "https://www.youtube.com/embed/EXeTwQWrcwY",   // Dark Knight - trailer
+        238: "https://www.youtube.com/embed/sY1S34973zA"    // Godfather - trailer
+    };
 
     const movieDescriptions = {
         278: "Dy të burgosur krijuan një lidhje të jashtëzakonshme gjatë dekadave në burg, duke gjetur shpresë dhe shpengim përmes miqësisë së tyre.",
@@ -224,12 +234,46 @@
         document.getElementById('modalOverview').innerText = item.overview;
         document.getElementById('modalGenres').innerHTML = `<i class="fas fa-tags"></i> ${item.genres}`;
         document.getElementById('modalImage').src = item.poster;
+        
+        // Shto linkun e videos nëse ekziston
+        const videoPlaceholder = document.getElementById('videoPlaceholder');
+        if (videoLinks[id]) {
+            videoPlaceholder.innerHTML = `
+                <i class="fas fa-play-circle"></i>
+                <p>Shiko trailerin:</p>
+                <a href="${videoLinks[id]}" target="_blank">Kliko për të parë trailerin</a>
+            `;
+        } else {
+            videoPlaceholder.innerHTML = `<i class="fas fa-video"></i><p>Linku i videos do të shtohet së shpejti</p>`;
+        }
     };
 
     window.closeModal = function() { document.getElementById('movieModal').style.display = 'none'; };
 
+    // KËRKIMI I PËRMIRËSUAR (gjen edhe nga lista lokale)
     async function searchTMDB(query) {
-        if (!query || query.length < 2) { loadMovies(); return; }
+        if (!query || query.length < 1) { 
+            loadMovies(); 
+            return; 
+        }
+        
+        const searchTerm = query.toLowerCase();
+        
+        // Kërko fillimisht në listën lokale të filmave
+        const localMovies = await Promise.all(MOVIES.map(id => fetchMovieById(id)));
+        const localResults = localMovies.filter(movie => 
+            movie.title.toLowerCase().includes(searchTerm)
+        );
+        
+        if (localResults.length > 0) {
+            localResults.forEach(m => m.type = 'movie');
+            renderRow('trendingRow', localResults.slice(0, 10));
+            renderRow('moviesRow', []);
+            renderRow('tvRow', []);
+            return;
+        }
+        
+        // Nëse nuk gjendet lokal, kërko te TMDB
         const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=${LANGUAGE}`);
         const data = await res.json();
         const results = data.results.slice(0, 10).map(item => ({
@@ -290,7 +334,7 @@
             let timeout;
             searchInput.addEventListener('input', (e) => {
                 clearTimeout(timeout);
-                timeout = setTimeout(() => searchTMDB(e.target.value.trim()), 500);
+                timeout = setTimeout(() => searchTMDB(e.target.value.trim()), 300);
             });
         }
     });
