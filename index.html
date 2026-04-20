@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
+        /* ... CSS e njëjtë si më parë ... */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; overflow-x: hidden; }
         .navbar { position: fixed; top: 0; width: 100%; background: linear-gradient(180deg, #0a0a0a 0%, transparent 100%); z-index: 1000; padding: 1rem 2rem; backdrop-filter: blur(8px); }
@@ -161,31 +162,30 @@
     const IMG_URL = 'https://image.tmdb.org/t/p/w500';
     const LANGUAGE = 'en-US';
 
-    // ==================== LISTAT E FILMAVE (ID-të e TMDB) ====================
-    // Për filmat që nuk i gjen dot, mund t'i kërkosh manualisht në TMDB
-    const MOVIES = [27205, 238, 155]; // Inception, Godfather, Dark Knight (shembull)
-    
-    // ==================== SERIALET ====================
-    const TV_SHOWS = [1396, 1399]; // Breaking Bad, Stranger Things (shembull)
+    // ==================== LISTAT E FILMAVE ====================
+    // Vetëm këta tre filma për testim
+    const MOVIES = [1348376, 1248910];
+    const TV_SHOWS = [1396, 1399];
 
     // ==================== LINKET E VIDEOVE NGA ABYSS ====================
-    // Formati: "tmdb_id": "https://abyss.to/v/slug_i_abyss"
-    // Për filmat që nuk kanë ID TMDB, do të shfaqen vetëm me linkun e Abyss
     const videoLinks = {
-        // "27205": "https://abyss.to/v/YYmY8Qy-M",  // Shembull: Inception
-        // Shto këtu filmat e tu:
-        "27205": "https://abyss.to/v/YYmY8Qy-M",  // 14 Days
-        // "ID_TJETER": "https://abyss.to/v/44qkCuGWS",  // Believe
-        // "ID_TJETER": "https://abyss.to/v/-wV45QMMK",  // Chhava
-        // "ID_TJETER": "https://abyss.to/v/t3WJQtN4d",  // Die My Love
+        "1348376": "https://abyss.to/v/-wV45QMMK",  // Chhaava
+        "1248910": "https://abyss.to/v/t3WJQtN4d"   // Die My Love
     };
 
-    // Përshkrimet në shqip për filmat (për ata që nuk kanë nga TMDB)
-    const movieDescriptions = {
-        27205: "Një hajdut pushton ëndrrat e njerëzve për të vjedhur sekrete korporative, por rrezikon të humbasë veten në realitet.",
-        238: "Familja kriminale më e fuqishme në New York përballet me sfida kur patriarku kërkon të transferojë pushtetin te djali i tij më i vogël.",
-        155: "Batman përballet me Jokerin, një kriminel që synon të shkatërrojë rendin në Gotham dhe të provojë se çdokush mund të korruptohet."
-    };
+    // Për filmin që nuk ka ID (14 Days), e shtojmë manualisht
+    const manualMovies = [
+        {
+            id: "manual_1",
+            title: "14 Days (Girlfriend Intlo)",
+            year: "2025",
+            rating: "N/A",
+            poster: "https://placehold.co/500x750/1a1a1a/e50914?text=14+Days",
+            overview: "Një histori dashurie dhe komedi e vitit 2025.",
+            genres: "Komedi, Romancë",
+            type: "movie"
+        }
+    ];
 
     async function fetchMovieById(id) {
         try {
@@ -196,17 +196,12 @@
                 id: data.id, title: data.title, year: data.release_date ? data.release_date.split('-')[0] : 'N/A',
                 rating: data.vote_average ? data.vote_average.toFixed(1) : 'N/A',
                 poster: data.poster_path ? IMG_URL + data.poster_path : 'https://placehold.co/500x750/1a1a1a/e50914?text=No+Poster',
-                overview: movieDescriptions[id] || data.overview || 'Përshkrimi nuk është i disponueshëm.',
-                genres: data.genres ? data.genres.map(g => g.name).join(', ') : 'N/A'
+                overview: data.overview || 'Përshkrimi nuk është i disponueshëm.',
+                genres: data.genres ? data.genres.map(g => g.name).join(', ') : 'N/A',
+                type: 'movie'
             };
         } catch (error) {
-            return {
-                id: id, title: 'ID e panjohur: ' + id, year: 'N/A',
-                rating: 'N/A',
-                poster: 'https://placehold.co/500x750/1a1a1a/e50914?text=ID+Not+Found',
-                overview: 'Kjo ID nuk u gjet në TMDB. Kontrollo nëse është e saktë.',
-                genres: 'N/A'
-            };
+            return null;
         }
     }
 
@@ -218,7 +213,8 @@
             rating: data.vote_average ? data.vote_average.toFixed(1) : 'N/A',
             poster: data.poster_path ? IMG_URL + data.poster_path : 'https://placehold.co/500x750/1a1a1a/e50914?text=No+Poster',
             overview: data.overview || 'Përshkrimi nuk është i disponueshëm.',
-            genres: data.genres ? data.genres.map(g => g.name).join(', ') : 'N/A'
+            genres: data.genres ? data.genres.map(g => g.name).join(', ') : 'N/A',
+            type: 'tv'
         };
     }
 
@@ -230,16 +226,27 @@
             return;
         }
         container.innerHTML = items.map(item => `
-            <div class="movie-card" onclick="openMovieModal(${item.id}, '${item.type}')">
+            <div class="movie-card" onclick="openMovieModal('${item.id}', '${item.type}')">
                 <img src="${item.poster}" alt="${item.title}"><h4>${item.title} (${item.year})</h4><div class="rating">⭐ ${item.rating}/10</div>
             </div>
         `).join('');
     }
 
     async function loadMovies() {
-        const trending = await Promise.all(MOVIES.slice(0,6).map(id => fetchMovieById(id))); trending.forEach(m => m.type = 'movie'); renderRow('trendingRow', trending);
-        const movies = await Promise.all(MOVIES.map(id => fetchMovieById(id))); movies.forEach(m => m.type = 'movie'); renderRow('moviesRow', movies);
-        const tvShows = await Promise.all(TV_SHOWS.map(id => fetchTvById(id))); tvShows.forEach(t => t.type = 'tv'); renderRow('tvRow', tvShows);
+        // Ngarko filmat nga TMDB
+        const moviePromises = MOVIES.map(id => fetchMovieById(id));
+        let movies = await Promise.all(moviePromises);
+        movies = movies.filter(m => m !== null);
+        
+        // Shto filmin manual
+        movies.push(manualMovies[0]);
+        
+        // Ngarko serialet
+        const tvShows = await Promise.all(TV_SHOWS.map(id => fetchTvById(id)));
+        
+        renderRow('trendingRow', movies.slice(0, 6));
+        renderRow('moviesRow', movies);
+        renderRow('tvRow', tvShows);
     }
 
     window.resetToTrending = function() {
@@ -252,20 +259,30 @@
         const modal = document.getElementById('movieModal');
         document.getElementById('modalTitle').innerText = 'Duke ngarkuar...';
         modal.style.display = 'flex';
-        const fetchFunc = type === 'tv' ? fetchTvById : fetchMovieById;
-        const item = await fetchFunc(id);
-        document.getElementById('modalTitle').innerText = item.title;
-        document.getElementById('modalYear').innerHTML = `<i class="fas fa-calendar"></i> ${item.year}`;
-        document.getElementById('modalRating').innerHTML = `<i class="fas fa-star" style="color:#ffc107;"></i> ${item.rating}/10`;
-        document.getElementById('modalOverview').innerText = item.overview;
-        document.getElementById('modalGenres').innerHTML = `<i class="fas fa-tags"></i> ${item.genres}`;
-        document.getElementById('modalImage').src = item.poster;
         
-        const videoPlaceholder = document.getElementById('videoPlaceholder');
-        if (videoLinks[id]) {
-            videoPlaceholder.innerHTML = `<i class="fas fa-play-circle"></i><p>Shiko filmin:</p><a href="${videoLinks[id]}" target="_blank">Kliko për të parë</a>`;
+        let item;
+        if (id === 'manual_1') {
+            item = manualMovies[0];
+        } else if (type === 'tv') {
+            item = await fetchTvById(parseInt(id));
         } else {
-            videoPlaceholder.innerHTML = `<i class="fas fa-video"></i><p>Linku i videos do të shtohet së shpejti</p>`;
+            item = await fetchMovieById(parseInt(id));
+        }
+        
+        if (item) {
+            document.getElementById('modalTitle').innerText = item.title;
+            document.getElementById('modalYear').innerHTML = `<i class="fas fa-calendar"></i> ${item.year}`;
+            document.getElementById('modalRating').innerHTML = `<i class="fas fa-star" style="color:#ffc107;"></i> ${item.rating}/10`;
+            document.getElementById('modalOverview').innerText = item.overview;
+            document.getElementById('modalGenres').innerHTML = `<i class="fas fa-tags"></i> ${item.genres}`;
+            document.getElementById('modalImage').src = item.poster;
+            
+            const videoPlaceholder = document.getElementById('videoPlaceholder');
+            if (videoLinks[id]) {
+                videoPlaceholder.innerHTML = `<i class="fas fa-play-circle"></i><p>Shiko filmin:</p><a href="${videoLinks[id]}" target="_blank">Kliko për të parë</a>`;
+            } else {
+                videoPlaceholder.innerHTML = `<i class="fas fa-video"></i><p>Linku i videos do të shtohet së shpejti</p>`;
+            }
         }
     };
 
@@ -279,12 +296,16 @@
         }
         
         const searchTerm = query.toLowerCase();
-        const localMovies = await Promise.all(MOVIES.map(id => fetchMovieById(id)));
-        const results = localMovies.filter(movie => movie.title.toLowerCase().includes(searchTerm));
+        const moviePromises = MOVIES.map(id => fetchMovieById(id));
+        let movies = await Promise.all(moviePromises);
+        movies = movies.filter(m => m !== null);
+        movies.push(manualMovies[0]);
+        
+        const results = movies.filter(movie => movie.title.toLowerCase().includes(searchTerm));
         
         if (results.length > 0) {
             dropdown.innerHTML = results.slice(0, 8).map(movie => `
-                <div class="search-item" onclick="openMovieModal(${movie.id}, 'movie'); document.getElementById('searchDropdown').classList.remove('show'); document.getElementById('searchInput').value = '';">
+                <div class="search-item" onclick="openMovieModal('${movie.id}', 'movie'); document.getElementById('searchDropdown').classList.remove('show'); document.getElementById('searchInput').value = '';">
                     <img src="${movie.poster}" alt="${movie.title}">
                     <div class="search-item-info">
                         <h4>${movie.title}</h4>
