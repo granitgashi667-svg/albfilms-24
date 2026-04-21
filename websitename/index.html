@@ -4,97 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AlbFilms24 | Filma & Seriale</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; }
-        .navbar { position: fixed; top: 0; width: 100%; background: #0a0a0a; z-index: 1000; padding: 1rem 2rem; border-bottom: 1px solid #e50914; }
-        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-        .logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
-        .logo-icon { font-size: 2rem; color: #e50914; }
-        .logo-text { font-family: 'Orbitron', monospace; font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #fff, #e50914, #ff6b6b); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-        .nav-links { display: flex; gap: 2rem; align-items: center; }
-        .nav-links a { color: #fff; text-decoration: none; font-weight: 500; }
-        .search-bar { display: flex; align-items: center; background: rgba(255,255,255,0.1); border-radius: 40px; padding: 0.5rem 1rem; gap: 0.5rem; }
-        .search-bar input { background: none; border: none; color: #fff; outline: none; width: 200px; }
-        .hero { height: 85vh; margin-top: 70px; display: flex; align-items: center; justify-content: center; text-align: center; background: linear-gradient(135deg, #0a0a0a, #1a1a1a); }
-        .hero-content h1 { font-family: 'Orbitron', monospace; font-size: 4rem; margin-bottom: 1rem; background: linear-gradient(135deg, #fff, #e50914); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-content p { font-size: 1.2rem; margin-bottom: 2rem; color: #ddd; }
-        .btn-play { background: #e50914; color: #fff; padding: 0.8rem 2rem; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; }
-        .container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
-        .row { margin-bottom: 3rem; }
-        .row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .row-header h2 { font-size: 1.5rem; display: flex; align-items: center; gap: 0.8rem; }
-        .row-header h2 i { color: #e50914; }
-        .movies-row { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem; }
-        .movies-row::-webkit-scrollbar { height: 6px; }
-        .movies-row::-webkit-scrollbar-track { background: #1a1a1a; border-radius: 10px; }
-        .movies-row::-webkit-scrollbar-thumb { background: #e50914; border-radius: 10px; }
-        .movie-card { min-width: 180px; cursor: pointer; transition: transform 0.3s; }
+        body { font-family: Arial, sans-serif; background: #0a0a0a; color: #fff; padding: 20px; }
+        h1 { text-align: center; margin: 20px 0; color: #e50914; }
+        .movies-container { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; }
+        .movie-card { background: #1a1a1a; border-radius: 10px; width: 200px; cursor: pointer; transition: transform 0.3s; text-align: center; padding-bottom: 10px; }
         .movie-card:hover { transform: scale(1.05); }
-        .movie-card img { width: 100%; border-radius: 12px; }
-        .movie-card h4 { margin-top: 0.5rem; text-align: center; font-size: 0.9rem; }
-        .footer { background: #0a0a0a; text-align: center; padding: 2rem; margin-top: 3rem; border-top: 1px solid #1f1f1f; }
-        @media (max-width: 768px) { .hero-content h1 { font-size: 2.5rem; } .movie-card { min-width: 140px; } }
+        .movie-card img { width: 100%; border-radius: 10px 10px 0 0; height: 280px; object-fit: cover; background: #333; }
+        .movie-card h3 { font-size: 1rem; margin: 10px; }
+        .back-link { display: block; text-align: center; margin-top: 30px; color: #e50914; text-decoration: none; }
     </style>
 </head>
 <body>
 
-<nav class="navbar">
-    <div class="nav-container">
-        <a href="index.html" class="logo">
-            <i class="fas fa-clapperboard logo-icon"></i>
-            <span class="logo-text">ALBFILMS24</span>
-        </a>
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="#">Movies</a>
-            <a href="#">TV Shows</a>
-        </div>
-        <div class="search-bar"><i class="fas fa-search"></i><input type="text" placeholder="Kërko film..." id="searchInput"></div>
-    </div>
-</nav>
-
-<section class="hero">
-    <div class="hero-content">
-        <h1>AlbFilms24</h1>
-        <p>Destinacioni yt për filma dhe seriale HD. Eksploro dhe shijo!</p>
-        <button class="btn-play"><i class="fas fa-play"></i> Fillo Eksplorimin</button>
-    </div>
-</section>
-
-<div class="container">
-    <div class="row">
-        <div class="row-header"><h2><i class="fas fa-fire"></i> Trending Now</h2></div>
-        <div class="movies-row" id="trendingRow"></div>
-    </div>
-    <div class="row">
-        <div class="row-header"><h2><i class="fas fa-star"></i> Popular Movies</h2></div>
-        <div class="movies-row" id="moviesRow"></div>
-    </div>
-</div>
-
-<footer class="footer"><p>© 2025 AlbFilms24. Të gjitha të drejtat e rezervuara.</p></footer>
+<h1>🎬 AlbFilms24</h1>
+<div class="movies-container" id="moviesList"></div>
 
 <script>
-    // Lista e filmave: emri, posteri, ID e Abyss
+    // Lista e filmave: shto këtu të gjithë filmat e tu
     const movies = [
-        { title: "14 Days (Girlfriend Intlo) 2025", poster: "https://placehold.co/300x450/1a1a1a/e50914?text=14+Days", slug: "YYmY8Qy-M" },
-        { title: "Believe: The Ultimate Battle", poster: "https://placehold.co/300x450/1a1a1a/e50914?text=Believe", slug: "44qkCuGWS" }
+        { title: "14 Days (Girlfriend Intlo) 2025", slug: "YYmY8Qy-M", poster: "https://placehold.co/300x450/1a1a1a/e50914?text=14+Days" },
+        { title: "Believe: The Ultimate Battle", slug: "44qkCuGWS", poster: "https://placehold.co/300x450/1a1a1a/e50914?text=Believe" }
     ];
 
-    function renderMovies() {
-        const container = document.getElementById('moviesRow');
-        container.innerHTML = movies.map(movie => `
-            <div class="movie-card" onclick="location.href='watch.html?slug=${movie.slug}&title=${encodeURIComponent(movie.title)}'">
-                <img src="${movie.poster}" alt="${movie.title}">
-                <h4>${movie.title}</h4>
-            </div>
-        `).join('');
-    }
-
-    renderMovies();
+    const container = document.getElementById('moviesList');
+    container.innerHTML = movies.map(movie => `
+        <div class="movie-card" onclick="location.href='watch.html?slug=${movie.slug}&title=${encodeURIComponent(movie.title)}'">
+            <img src="${movie.poster}" alt="${movie.title}">
+            <h3>${movie.title}</h3>
+        </div>
+    `).join('');
 </script>
+
 </body>
 </html>
