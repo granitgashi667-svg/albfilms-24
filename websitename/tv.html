@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlbFilms24 - TV Series</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="index.html" class="logo"><i class="fas fa-clapperboard"></i><span>AlbFilms24</span></a>
+        <div class="nav-links"><a href="index.html">Home</a><a href="#">Movies</a><a href="#">TV Shows</a></div>
+    </div>
+</nav>
+
+<div class="movie-detail-container" id="tvDetail">
+    <div class="movie-backdrop" id="tvBackdrop"></div>
+    <div class="movie-detail-content">
+        <div class="movie-poster"><img id="tvPoster" src="" alt=""></div>
+        <div class="movie-info">
+            <h1 id="tvTitle"></h1>
+            <div class="movie-meta"><span id="tvYear"></span><span id="tvRating"></span></div>
+            <p id="tvOverview"></p>
+            <div class="movie-genres" id="tvGenres"></div>
+        </div>
+    </div>
+</div>
+
+<div class="seasons-container">
+    <div class="season-tabs" id="seasonTabs"></div>
+    <div class="episodes-grid" id="episodesGrid"></div>
+</div>
+
+<footer class="footer"><div class="footer-content"><p>&copy; 2025 AlbFilms24</p></div></footer>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const tvId = urlParams.get('id');
+    const API_KEY = '7a98db423d6e3a5ee922a3e51a09d135';
+    const BASE_URL = 'https://api.themoviedb.org/3';
+    const IMG_URL = 'https://image.tmdb.org/t/p/w500';
+    const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
+
+    let currentSeason = 1;
+    let totalSeasons = 0;
+
+    async function loadTV() {
+        if (!tvId) return;
+        const res = await fetch(`${BASE_URL}/tv/${tvId}?api_key=${API_KEY}&language=en-US`);
+        const tv = await res.json();
+        
+        document.title = `${tv.name} - AlbFilms24`;
+        document.getElementById('tvTitle').innerText = tv.name;
+        document.getElementById('tvYear').innerHTML = `<i class="fas fa-calendar"></i> ${tv.first_air_date ? tv.first_air_date.split('-')[0] : 'N/A'}`;
+        document.getElementById('tvRating').innerHTML = `<i class="fas fa-star"></i> ${tv.vote_average ? tv.vote_average.toFixed(1) : 'N/A'}/10`;
+        document.getElementById('tvOverview').innerText = tv.overview || 'No description available.';
+        document.getElementById('tvGenres').innerHTML = tv.genres.map(g => `<span class="genre-tag">${g.name}</span>`).join('');
+        document.getElementById('tvPoster').src = tv.poster_path ? IMG_URL + tv.poster_path : 'https://placehold.co/500x750/1a1a1a/e50914?text=No+Poster';
+        document.getElementById('tvBackdrop').style.backgroundImage = `linear-gradient(90deg, #0a0a0a 0%, transparent 70%), url(${BACKDROP_URL + tv.backdrop_path})`;
+        
+        totalSeasons = tv.number_of_seasons;
+        renderSeasonTabs();
+        loadEpisodes(1);
+    }
+    
+    function renderSeasonTabs() {
+        const container = document.getElementById('seasonTabs');
+        container.innerHTML = '';
+        for (let i = 1; i <= totalSeasons; i++) {
+            const btn = document.createElement('button');
+            btn.innerText = `Season ${i}`;
+            btn.classList.add('season-tab');
+            if (i === currentSeason) btn.classList.add('active');
+            btn.onclick = () => { currentSeason = i; loadEpisodes(i); };
+            container.appendChild(btn);
+        }
+    }
+    
+    async function loadEpisodes(season) {
+        const res = await fetch(`${BASE_URL}/tv/${tvId}/season/${season}?api_key=${API_KEY}&language=en-US`);
+        const data = await res.json();
+        const episodes = data.episodes || [];
+        
+        document.querySelectorAll('.season-tab').forEach((btn, idx) => {
+            btn.classList.toggle('active', idx + 1 === season);
+        });
+        
+        const grid = document.getElementById('episodesGrid');
+        grid.innerHTML = episodes.map(ep => `
+            <div class="episode-card" onclick="location.href='watch.html?type=tv&id=${tvId}&season=${season}&episode=${ep.episode_number}'">
+                <img src="${ep.still_path ? IMG_URL + ep.still_path : 'https://placehold.co/300x170/1a1a1a/e50914?text=No+Image'}" alt="${ep.name}">
+                <div class="episode-info">
+                    <h4>${ep.episode_number}. ${ep.name}</h4>
+                    <p>${ep.overview ? ep.overview.substring(0, 100) + '...' : 'No description'}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    loadTV();
+</script>
+</body>
+</html>
