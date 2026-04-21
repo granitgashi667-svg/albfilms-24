@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlbFilms24 | Filma & Seriale</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #0a0a0a; color: #fff; padding: 40px 20px; }
+        h1 { text-align: center; margin-bottom: 30px; color: #e50914; }
+        .movies-container { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; }
+        .movie-card { background: #1a1a1a; border-radius: 12px; width: 220px; cursor: pointer; transition: transform 0.3s; text-align: center; padding-bottom: 15px; }
+        .movie-card:hover { transform: scale(1.05); }
+        .movie-card img { width: 100%; border-radius: 12px 12px 0 0; height: 300px; object-fit: cover; background: #333; }
+        .movie-card h3 { font-size: 1rem; margin: 12px; }
+    </style>
+</head>
+<body>
+
+<h1>🎬 AlbFilms24</h1>
+<div class="movies-container" id="moviesContainer"></div>
+
+<script>
+    // Lista e filmave - shto këtu të gjithë filmat e tu
+    const movies = [
+        { title: "14 Days (Girlfriend Intlo) 2025", slug: "YYmY8Qy-M", poster: "https://placehold.co/300x450/1a1a1a/e50914?text=14+Days" },
+        { title: "Believe: The Ultimate Battle", slug: "44qkCuGWS", poster: "https://placehold.co/300x450/1a1a1a/e50914?text=Believe" }
+    ];
+
+    const container = document.getElementById('moviesContainer');
+    container.innerHTML = movies.map(movie => `
+        <div class="movie-card" onclick="location.href='watch.html?slug=${movie.slug}&title=${encodeURIComponent(movie.title)}'">
+            <img src="${movie.poster}" alt="${movie.title}">
+            <h3>${movie.title}</h3>
+        </div>
+    `).join('');
+</script>
+
+</body>
+</html>
