@@ -9,9 +9,8 @@
         body { background: #0a0a0a; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: Arial, sans-serif; }
         .video-container { width: 90%; max-width: 1000px; text-align: center; }
         .video-container iframe { width: 100%; height: 500px; border: none; border-radius: 12px; }
-        .back-link { display: block; text-align: center; margin-top: 20px; color: #e50914; text-decoration: none; font-size: 1.1rem; }
-        .back-link:hover { text-decoration: underline; }
-        h1 { color: #fff; text-align: center; margin-bottom: 20px; font-size: 1.5rem; }
+        .back-link { display: block; margin-top: 20px; color: #e50914; text-decoration: none; font-size: 1rem; }
+        h1 { color: #fff; margin-bottom: 20px; font-size: 1.5rem; }
     </style>
 </head>
 <body>
@@ -31,7 +30,6 @@
         }
 
         if (slug) {
-            // Linku i saktë i Abyss
             document.getElementById('videoFrame').src = `https://abyss.to/v/${slug}`;
         } else {
             document.getElementById('movieTitle').innerText = '❌ Film jo i disponueshëm';
