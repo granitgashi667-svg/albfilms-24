@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlbFilms24 - Movie Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="index.html" class="logo"><i class="fas fa-clapperboard"></i><span>AlbFilms24</span></a>
+        <div class="nav-links"><a href="index.html">Home</a><a href="#">Movies</a><a href="#">TV Shows</a></div>
+    </div>
+</nav>
+
+<div class="movie-detail-container" id="movieDetail">
+    <div class="movie-backdrop" id="movieBackdrop"></div>
+    <div class="movie-detail-content">
+        <div class="movie-poster"><img id="moviePoster" src="" alt=""></div>
+        <div class="movie-info">
+            <h1 id="movieTitle"></h1>
+            <div class="movie-meta"><span id="movieYear"></span><span id="movieRating"></span><span id="movieRuntime"></span></div>
+            <p id="movieOverview"></p>
+            <div class="movie-genres" id="movieGenres"></div>
+            <button class="watch-btn" id="watchBtn"><i class="fas fa-play"></i> Watch Now</button>
+        </div>
+    </div>
+</div>
+
+<footer class="footer"><div class="footer-content"><p>&copy; 2025 AlbFilms24</p></div></footer>
+
+<script src="js/main.js"></script>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const movieId = urlParams.get('id');
+    if (movieId) loadMovieDetails(movieId);
+</script>
+</body>
+</html>
