@@ -11,7 +11,6 @@
         .video-container iframe { width: 100%; height: 500px; border: none; border-radius: 12px; }
         .back-link { display: inline-block; margin-top: 20px; color: #e50914; text-decoration: none; font-size: 1rem; }
         h1 { color: #fff; margin-bottom: 20px; font-size: 1.5rem; }
-        .debug { background: #1a1a1a; color: #0f0; padding: 10px; margin-top: 20px; font-size: 12px; text-align: left; display: none; }
     </style>
 </head>
 <body>
@@ -19,43 +18,22 @@
         <h1 id="movieTitle">🎬 Duke ngarkuar...</h1>
         <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
         <br><a href="javascript:history.back()" class="back-link">← Kthehu te faqja kryesore</a>
-        <div class="debug" id="debug"></div>
     </div>
-
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');      // slug nga Abyss, p.sh. YYmY8Qy-M
+        const id = urlParams.get('id');        // slug, p.sh. YYmY8Qy-M
         const title = decodeURIComponent(urlParams.get('title') || '');
-        const type = urlParams.get('type');  // 'movie' ose 'tv'
-
-        // Debug: shfaq parametrat (mund ta heqësh më vonë)
-        const debugDiv = document.getElementById('debug');
-        debugDiv.style.display = 'block';
-        debugDiv.innerHTML = `ID: ${id}<br>Title: ${title}<br>Type: ${type}`;
 
         if (title) {
             document.getElementById('movieTitle').innerText = title;
         }
 
-        let videoUrl = '';
         if (id) {
-            // Përdor linkun standard të Abyss (jo short.icu)
-            videoUrl = `https://abyss.to/v/${id}`;
-        }
-
-        if (videoUrl) {
-            const iframe = document.getElementById('videoFrame');
-            iframe.src = videoUrl;
-            debugDiv.innerHTML += `<br>Iframe src: ${videoUrl}`;
-            // Nëse pas 5 sekondash iframe është bosh, trego paralajmërim
-            setTimeout(() => {
-                if (!iframe.src || iframe.src === '') {
-                    debugDiv.innerHTML += `<br>⚠️ Iframe nuk u ngarkua. Kontrollo konzolën (F12).`;
-                }
-            }, 5000);
+            // Linku direkt i Abyss (jo short.icu)
+            const videoUrl = `https://abyss.to/v/${id}`;
+            document.getElementById('videoFrame').src = videoUrl;
         } else {
-            document.getElementById('movieTitle').innerText = '❌ Missing video ID';
-            debugDiv.innerHTML += `<br>Gabim: Nuk ka ID në URL`;
+            document.getElementById('movieTitle').innerText = '❌ ID e filmit nuk u gjet';
         }
     </script>
 </body>
