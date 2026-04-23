@@ -7,7 +7,7 @@ const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
 const MOVIES = [27205, 238, 155, 680, 13, 603, 769, 98, 597, 278];
 const TV_SHOWS = [1396, 1399, 106459, 1402, 456];
 
-// Filmat e personalizuar nga Abyss (pa TMDB)
+// Filmat nga Abyss (me slug dhe poster placeholder)
 const customMovies = [
     { id: "custom_1", title: "14 Days (Girlfriend Intlo) 2025", slug: "YYmY8Qy-M", poster: "https://placehold.co/300x450/1a1a1a/e50914?text=14+Days", year: "2025", rating: "N/A" },
     { id: "custom_2", title: "Believe: The Ultimate Battle", slug: "44qkCuGWS", poster: "https://placehold.co/300x450/1a1a1a/e50914?text=Believe", year: "2024", rating: "N/A" }
@@ -51,7 +51,7 @@ function renderCustomRow() {
     const container = document.getElementById('customRow');
     if (!container) return;
     container.innerHTML = customMovies.map(movie => `
-        <div class="movie-card" onclick="location.href='watch.html?type=movie&id=${movie.slug}&title=${encodeURIComponent(movie.title)}'">
+        <div class="movie-card" onclick="location.href='watch.html?id=${movie.slug}&title=${encodeURIComponent(movie.title)}'">
             <img src="${movie.poster}" alt="${movie.title}">
             <h4>${movie.title} (${movie.year})</h4>
             <div class="rating">⭐ ${movie.rating}/10</div>
@@ -112,7 +112,7 @@ async function loadMovieDetails(id) {
     document.getElementById('movieGenres').innerHTML = `<span class="genre-tag">Aksion</span><span class="genre-tag">Dramë</span>`;
     document.getElementById('moviePoster').src = movie.poster;
     document.getElementById('movieBackdrop').style.backgroundImage = `linear-gradient(90deg, #0a0a0a 0%, transparent 70%), url(${movie.backdrop})`;
-    document.getElementById('watchBtn').onclick = () => { window.location.href = `watch.html?type=movie&id=${id}`; };
+    document.getElementById('watchBtn').onclick = () => { window.location.href = `watch.html?id=${id}`; };
 }
 window.loadMovieDetails = loadMovieDetails;
 
