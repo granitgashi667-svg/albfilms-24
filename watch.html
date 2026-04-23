@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AlbFilms24 - Watch</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #0a0a0a; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: Arial, sans-serif; }
@@ -12,7 +11,7 @@
         .video-container iframe { width: 100%; height: 500px; border: none; border-radius: 12px; }
         .back-link { display: inline-block; margin-top: 20px; color: #e50914; text-decoration: none; font-size: 1rem; }
         h1 { color: #fff; margin-bottom: 20px; font-size: 1.5rem; }
-        .error-msg { color: #ff4444; margin-top: 20px; }
+        .debug { background: #1a1a1a; color: #0f0; padding: 10px; margin-top: 20px; font-size: 12px; text-align: left; display: none; }
     </style>
 </head>
 <body>
@@ -20,51 +19,43 @@
         <h1 id="movieTitle">🎬 Duke ngarkuar...</h1>
         <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
         <br><a href="javascript:history.back()" class="back-link">← Kthehu te faqja kryesore</a>
+        <div class="debug" id="debug"></div>
     </div>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const type = urlParams.get('type');
-        const id = urlParams.get('id');  // kjo është slug, p.sh. YYmY8Qy-M
-        const season = urlParams.get('season');
-        const episode = urlParams.get('episode');
+        const id = urlParams.get('id');      // slug nga Abyss, p.sh. YYmY8Qy-M
         const title = decodeURIComponent(urlParams.get('title') || '');
+        const type = urlParams.get('type');  // 'movie' ose 'tv'
 
-        let videoUrl = '';
+        // Debug: shfaq parametrat (mund ta heqësh më vonë)
+        const debugDiv = document.getElementById('debug');
+        debugDiv.style.display = 'block';
+        debugDiv.innerHTML = `ID: ${id}<br>Title: ${title}<br>Type: ${type}`;
 
         if (title) {
-            document.getElementById('movieTitle').innerHTML = `🎬 ${title}`;
+            document.getElementById('movieTitle').innerText = title;
         }
 
-        if (type === 'movie') {
-            // Përdor API-në e saktë të Abyss
-            if (id) {
-                videoUrl = `https://abyss.to/api/v1/getVideo/${id}`;
-                document.getElementById('movieTitle').innerHTML = `🎬 Duke ngarkuar filmin...`;
-            } else {
-                document.getElementById('movieTitle').innerHTML = '❌ ID e filmit nuk u gjet';
-            }
-        } else if (type === 'tv') {
-            if (id && season && episode) {
-                videoUrl = `https://abyss.to/api/v1/getVideo/${id}?season=${season}&episode=${episode}`;
-                document.getElementById('movieTitle').innerHTML = `📺 Sezoni ${season}, Episodi ${episode}`;
-            } else {
-                document.getElementById('movieTitle').innerHTML = '❌ Parametrat e serialit nuk u gjetën';
-            }
+        let videoUrl = '';
+        if (id) {
+            // Përdor linkun standard të Abyss (jo short.icu)
+            videoUrl = `https://abyss.to/v/${id}`;
         }
 
         if (videoUrl) {
-            document.getElementById('videoFrame').src = videoUrl;
-            // Nëse iframe nuk ngarkohet pas 10 sekondave, trego gabim
+            const iframe = document.getElementById('videoFrame');
+            iframe.src = videoUrl;
+            debugDiv.innerHTML += `<br>Iframe src: ${videoUrl}`;
+            // Nëse pas 5 sekondash iframe është bosh, trego paralajmërim
             setTimeout(() => {
-                const iframe = document.getElementById('videoFrame');
-                if (iframe && !iframe.src) {
-                    document.getElementById('movieTitle').innerHTML = '⚠️ Video nuk u ngarkua. Provo të rifreskosh faqen.';
+                if (!iframe.src || iframe.src === '') {
+                    debugDiv.innerHTML += `<br>⚠️ Iframe nuk u ngarkua. Kontrollo konzolën (F12).`;
                 }
-            }, 10000);
+            }, 5000);
         } else {
-            document.getElementById('videoFrame').style.display = 'none';
-            document.getElementById('movieTitle').innerHTML = '❗ Linku i videos nuk është i disponueshëm';
+            document.getElementById('movieTitle').innerText = '❌ Missing video ID';
+            debugDiv.innerHTML += `<br>Gabim: Nuk ka ID në URL`;
         }
     </script>
 </body>
