@@ -12,6 +12,7 @@
         .video-container iframe { width: 100%; height: 500px; border: none; border-radius: 12px; }
         .back-link { display: inline-block; margin-top: 20px; color: #e50914; text-decoration: none; font-size: 1rem; }
         h1 { color: #fff; margin-bottom: 20px; font-size: 1.5rem; }
+        .error-msg { color: #ff4444; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -20,33 +21,50 @@
         <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
         <br><a href="javascript:history.back()" class="back-link">← Kthehu te faqja kryesore</a>
     </div>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const type = urlParams.get('type');
-        const id = urlParams.get('id');
+        const id = urlParams.get('id');  // kjo është slug, p.sh. YYmY8Qy-M
         const season = urlParams.get('season');
         const episode = urlParams.get('episode');
-        
+        const title = decodeURIComponent(urlParams.get('title') || '');
+
         let videoUrl = '';
-        
-        // Lidhjet e Abyss (zëvendësoji me ID-të e tua)
-        const videoLinks = {
-            "movie_27205": "https://abyss.to/v/YYmY8Qy-M",
-            "tv_1396_1_1": "https://abyss.to/v/xxxxx"
-        };
-        
-        if (type === 'movie') {
-            videoUrl = videoLinks[`movie_${id}`] || `https://abyss.to/v/${id}`;
-            document.getElementById('movieTitle').innerText = '🎬 Duke ngarkuar filmin...';
-        } else if (type === 'tv') {
-            videoUrl = videoLinks[`tv_${id}_${season}_${episode}`] || `https://abyss.to/v/${id}`;
-            document.getElementById('movieTitle').innerText = `📺 Sezoni ${season}, Episodi ${episode}`;
+
+        if (title) {
+            document.getElementById('movieTitle').innerHTML = `🎬 ${title}`;
         }
-        
+
+        if (type === 'movie') {
+            // Përdor API-në e saktë të Abyss
+            if (id) {
+                videoUrl = `https://abyss.to/api/v1/getVideo/${id}`;
+                document.getElementById('movieTitle').innerHTML = `🎬 Duke ngarkuar filmin...`;
+            } else {
+                document.getElementById('movieTitle').innerHTML = '❌ ID e filmit nuk u gjet';
+            }
+        } else if (type === 'tv') {
+            if (id && season && episode) {
+                videoUrl = `https://abyss.to/api/v1/getVideo/${id}?season=${season}&episode=${episode}`;
+                document.getElementById('movieTitle').innerHTML = `📺 Sezoni ${season}, Episodi ${episode}`;
+            } else {
+                document.getElementById('movieTitle').innerHTML = '❌ Parametrat e serialit nuk u gjetën';
+            }
+        }
+
         if (videoUrl) {
             document.getElementById('videoFrame').src = videoUrl;
+            // Nëse iframe nuk ngarkohet pas 10 sekondave, trego gabim
+            setTimeout(() => {
+                const iframe = document.getElementById('videoFrame');
+                if (iframe && !iframe.src) {
+                    document.getElementById('movieTitle').innerHTML = '⚠️ Video nuk u ngarkua. Provo të rifreskosh faqen.';
+                }
+            }, 10000);
         } else {
-            document.getElementById('videoFrame').parentElement.innerHTML = '<h3 style="color:#fff;">Video link not available yet</h3><a href="index.html" class="back-link">← Kthehu te faqja kryesore</a>';
+            document.getElementById('videoFrame').style.display = 'none';
+            document.getElementById('movieTitle').innerHTML = '❗ Linku i videos nuk është i disponueshëm';
         }
     </script>
 </body>
