@@ -11,46 +11,71 @@
         .video-container iframe { width: 100%; height: 500px; border: none; border-radius: 12px; }
         .back-link { display: inline-block; margin-top: 20px; color: #e50914; text-decoration: none; font-size: 1rem; }
         h1 { color: #fff; margin-bottom: 20px; font-size: 1.5rem; }
+        .error-message { color: #ff6b6b; background: #2a0a0a; padding: 15px; border-radius: 8px; margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="video-container">
         <h1 id="movieTitle">🎬 Duke ngarkuar...</h1>
-        <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
+        <iframe id="videoFrame" src="" frameborder="0" allowfullscreen allow="autoplay; fullscreen"></iframe>
         <br><a href="javascript:history.back()" class="back-link">← Kthehu te faqja kryesore</a>
     </div>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const slug = urlParams.get('slug');
-        const type = urlParams.get('type');
+        let slug = urlParams.get('slug');
+        let type = urlParams.get('type');
         let title = decodeURIComponent(urlParams.get('title') || '');
 
         if (title) {
             document.getElementById('movieTitle').innerText = title;
+        } else {
+            document.getElementById('movieTitle').innerText = '🎬 Duke ngarkuar...';
         }
 
         let videoUrl = '';
-        if (type === 'abyss') {
-            videoUrl = `https://abyss.to/v/${slug}`;
-        } else if (type === 'vidmoly') {
-            // Vidmoly mund të ketë dy formate: /e/ ose /embed/
-            // Provo fillimisht /e/ (formati i zakonshëm)
+
+        // Kontroll nëse është një link i plotë (për testim)
+        if (slug && (slug.startsWith('http://') || slug.startsWith('https://'))) {
+            videoUrl = slug;
+            type = 'direct';
+        } 
+        // Për Abyss, përdor linkun e embed
+        else if (type === 'abyss') {
+            videoUrl = `https://abyss.to/embed/${slug}`;
+        } 
+        // Për VidMoly, përdor linkun e embed
+        else if (type === 'vidmoly') {
             videoUrl = `https://vidmoly.com/e/${slug}`;
-            // Nëse nuk funksionon, mund të ndryshosh manualisht në /embed/
-        } else {
-            // Nëse vjen nga TMDB (id numerik), nuk ka slug/type - tregojmë mesazh
-            const id = urlParams.get('id');
-            if (id && !isNaN(id)) {
-                document.getElementById('movieTitle').innerHTML = '❌ Ky film nga TMDB nuk ka link të drejtpërdrejtë. <br> Nevojitet burim abyss/vidmoly.';
-            } else {
-                document.getElementById('movieTitle').innerText = '❌ Burim i panjohur ose slug i gabuar.';
-            }
         }
 
-        if (videoUrl) {
-            document.getElementById('videoFrame').src = videoUrl;
-        } else if (!slug && !(urlParams.get('id') && !isNaN(urlParams.get('id')))) {
-            document.getElementById('movieTitle').innerText = '❌ Slug i filmit nuk u gjet.';
+        // Nëse nuk kemi asnjë URL të vlefshme
+        if (!videoUrl) {
+            document.getElementById('movieTitle').innerHTML = '❌ Gabim: URL e filmit nuk është e saktë.';
+            if(document.querySelector('.error-message')) return;
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = 'Sigurohuni që parametri "slug" dhe "type" të jenë të saktë.';
+            document.querySelector('.video-container').appendChild(errorDiv);
+        } else {
+            // Vendos URL-në në iframe
+            const iframe = document.getElementById('videoFrame');
+            iframe.src = videoUrl;
+            
+            // Kontroll nëse ngulitja është bllokuar pas 3 sekondash
+            setTimeout(() => {
+                try {
+                    // Nëse iframe nuk ka përmbajtje ose ka një gabim sigurie, tregoj mesazh
+                    if (iframe.contentWindow && iframe.contentWindow.document && iframe.contentWindow.document.body && 
+                        iframe.contentWindow.document.body.innerText.includes('X-Frame-Options')) {
+                        throw new Error('X-Frame-Options');
+                    }
+                } catch(e) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-message';
+                    errorDiv.innerHTML = '⚠️ Faqja në këtë link nuk lejon të hapet brenda iframe. <br> Provoni të përdorni linkun e saktë të "embed" nga Abyss/VidMoly.';
+                    document.querySelector('.video-container').appendChild(errorDiv);
+                }
+            }, 3000);
         }
     </script>
 </body>
