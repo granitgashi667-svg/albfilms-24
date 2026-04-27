@@ -21,19 +21,36 @@
     </div>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');        // slug, p.sh. YYmY8Qy-M
-        const title = decodeURIComponent(urlParams.get('title') || '');
+        const slug = urlParams.get('slug');
+        const type = urlParams.get('type');
+        let title = decodeURIComponent(urlParams.get('title') || '');
 
         if (title) {
             document.getElementById('movieTitle').innerText = title;
         }
 
-        if (id) {
-            // Linku direkt i Abyss (jo short.icu)
-            const videoUrl = `https://abyss.to/v/${id}`;
-            document.getElementById('videoFrame').src = videoUrl;
+        let videoUrl = '';
+        if (type === 'abyss') {
+            videoUrl = `https://abyss.to/v/${slug}`;
+        } else if (type === 'vidmoly') {
+            // Vidmoly mund të ketë dy formate: /e/ ose /embed/
+            // Provo fillimisht /e/ (formati i zakonshëm)
+            videoUrl = `https://vidmoly.com/e/${slug}`;
+            // Nëse nuk funksionon, mund të ndryshosh manualisht në /embed/
         } else {
-            document.getElementById('movieTitle').innerText = '❌ ID e filmit nuk u gjet';
+            // Nëse vjen nga TMDB (id numerik), nuk ka slug/type - tregojmë mesazh
+            const id = urlParams.get('id');
+            if (id && !isNaN(id)) {
+                document.getElementById('movieTitle').innerHTML = '❌ Ky film nga TMDB nuk ka link të drejtpërdrejtë. <br> Nevojitet burim abyss/vidmoly.';
+            } else {
+                document.getElementById('movieTitle').innerText = '❌ Burim i panjohur ose slug i gabuar.';
+            }
+        }
+
+        if (videoUrl) {
+            document.getElementById('videoFrame').src = videoUrl;
+        } else if (!slug && !(urlParams.get('id') && !isNaN(urlParams.get('id')))) {
+            document.getElementById('movieTitle').innerText = '❌ Slug i filmit nuk u gjet.';
         }
     </script>
 </body>
