@@ -3,16 +3,44 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://image.tmdb.org/t/p/w500';
 const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
 
-// Filmat nga TMDB
+// ID-të e filmave nga TMDB (për seksionet Trending, Popular Movies, TV Shows)
 const MOVIES = [27205, 238, 155, 680, 13, 603, 769, 98, 597, 278];
 const TV_SHOWS = [1396, 1399, 106459, 1402, 456];
 
-// Filmat nga Abyss (me slug dhe poster placeholder)
+// ==================== FILMAT E TU NGA ABYSS DHE VIDMOLY ====================
 const customMovies = [
-    { id: "custom_1", title: "14 Days (Girlfriend Intlo) 2025", slug: "YYmY8Qy-M", poster: "https://placehold.co/300x450/1a1a1a/e50914?text=14+Days", year: "2025", rating: "N/A" },
-    { id: "custom_2", title: "Believe: The Ultimate Battle", slug: "44qkCuGWS", poster: "https://placehold.co/300x450/1a1a1a/e50914?text=Believe", year: "2024", rating: "N/A" }
+    { 
+        id: "c1",
+        title: "14 Days (Girlfriend Intlo) 2025", 
+        slug: "YYmY8Qy-M", 
+        type: "abyss",   // "abyss" ose "vidmoly"
+        poster: "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
+        year: "2025", 
+        rating: "7.2" 
+    },
+    { 
+        id: "c2",
+        title: "Believe: The Ultimate Battle", 
+        slug: "44qkCuGWS", 
+        type: "abyss",
+        poster: "https://image.tmdb.org/t/p/w500/5Eip60UDiPLASyKjmH9ruTcTfL.jpg",
+        year: "2024", 
+        rating: "6.8" 
+    },
+    // Shto këtu filmat e tu të tjerë (abyss ose vidmoly)
+    // Shembull për vidmoly:
+    // { 
+    //     id: "c3",
+    //     title: "Filmi i Ri nga Vidmoly", 
+    //     slug: "abc123",   // ID nga embed link (p.sh. https://vidmoly.com/e/abc123)
+    //     type: "vidmoly",
+    //     poster: "https://image.tmdb.org/t/p/w500/poster.jpg",
+    //     year: "2025", 
+    //     rating: "N/A" 
+    // }
 ];
 
+// ==================== FUNKSIONET NDIHMËSE ====================
 async function fetchMovieById(id) {
     const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}`);
     const data = await res.json();
@@ -47,11 +75,12 @@ function renderRow(containerId, items, type) {
     `).join('');
 }
 
+// Rreshti i personalizuar për filmat nga abyss/vidmoly
 function renderCustomRow() {
     const container = document.getElementById('customRow');
     if (!container) return;
     container.innerHTML = customMovies.map(movie => `
-        <div class="movie-card" onclick="location.href='watch.html?id=${movie.slug}&title=${encodeURIComponent(movie.title)}'">
+        <div class="movie-card" onclick="location.href='watch.html?slug=${movie.slug}&type=${movie.type}&title=${encodeURIComponent(movie.title)}'">
             <img src="${movie.poster}" alt="${movie.title}">
             <h4>${movie.title} (${movie.year})</h4>
             <div class="rating">⭐ ${movie.rating}/10</div>
@@ -119,7 +148,7 @@ window.loadMovieDetails = loadMovieDetails;
 document.addEventListener('DOMContentLoaded', () => {
     loadMovies();
     loadHeroSlider();
-    renderCustomRow();
+    renderCustomRow();      // Shfaq filmat nga customMovies
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('keypress', (e) => {
