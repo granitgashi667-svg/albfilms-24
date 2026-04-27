@@ -27,15 +27,7 @@ const customMovies = [
         year: "2024", 
         rating: "6.8" 
     }
- { 
-        id: "c3",
-        title: "Chhaava 2025 ", 
-        slug: "https://short.icu/-wV45QMMK", 
-        type: "abyss",
-        poster: "https://image.tmdb.org/t/p/w500/5Eip60UDiPLASyKjmH9ruTcTfL.jpg",
-        year: "2024", 
-        rating: "6.8" 
-    }];
+];
 
 // ==================== FETCH ====================
 async function fetchMovieById(id) {
