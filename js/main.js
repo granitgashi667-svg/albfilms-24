@@ -12,7 +12,7 @@ const customMovies = [
     { 
         id: "c1",
         title: "14 Days (Girlfriend Intlo) 2025", 
-        slug: "YYmY8Qy-M", 
+        slug: "https://short.icu/YYmY8Qy-M", 
         type: "abyss",
         poster: "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
         year: "2025", 
@@ -20,14 +20,22 @@ const customMovies = [
     },
     { 
         id: "c2",
-        title: "Believe: The Ultimate Battle", 
+        title: "https://short.icu/44qkCuGWS", 
         slug: "44qkCuGWS", 
         type: "abyss",
         poster: "https://image.tmdb.org/t/p/w500/5Eip60UDiPLASyKjmH9ruTcTfL.jpg",
         year: "2024", 
         rating: "6.8" 
     }
-];
+ { 
+        id: "c3",
+        title: "Chhaava 2025 ", 
+        slug: "https://short.icu/-wV45QMMK", 
+        type: "abyss",
+        poster: "https://image.tmdb.org/t/p/w500/5Eip60UDiPLASyKjmH9ruTcTfL.jpg",
+        year: "2024", 
+        rating: "6.8" 
+    }];
 
 // ==================== FETCH ====================
 async function fetchMovieById(id) {
