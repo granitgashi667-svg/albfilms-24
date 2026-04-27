@@ -1,123 +1,147 @@
 <!DOCTYPE html>
 <html lang="sq">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlbFilms24 - Watch</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Watch Movie</title>
 
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<style>
+body{
+    margin:0;
+    background:#0a0a0a;
+    color:#fff;
+    font-family:Arial, sans-serif;
+}
 
-        body {
-            background: #0a0a0a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-        }
+.container{
+    max-width:1000px;
+    margin:auto;
+    padding:20px;
+    text-align:center;
+}
 
-        .video-container {
-            width: 90%;
-            max-width: 1000px;
-            text-align: center;
-        }
+h2{
+    margin-bottom:10px;
+}
 
-        iframe {
-            width: 100%;
-            height: 520px;
-            border: none;
-            border-radius: 12px;
-        }
+iframe{
+    width:100%;
+    height:520px;
+    border:none;
+    border-radius:12px;
+    background:#000;
+}
 
-        h1 {
-            color: #fff;
-            margin-bottom: 15px;
-        }
+.servers{
+    margin:15px 0;
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:10px;
+}
 
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: #e50914;
-            text-decoration: none;
-        }
+.server-btn{
+    padding:10px 15px;
+    background:#222;
+    border:1px solid #444;
+    color:#fff;
+    cursor:pointer;
+    border-radius:8px;
+    transition:0.2s;
+}
 
-        .error {
-            margin-top: 20px;
-            background: #2a0a0a;
-            color: #ff6b6b;
-            padding: 12px;
-            border-radius: 8px;
-        }
-    </style>
+.server-btn:hover{
+    background:#333;
+}
+
+.server-btn.active{
+    background:#e50914;
+    border-color:#e50914;
+}
+
+.back{
+    display:inline-block;
+    margin-top:15px;
+    color:#e50914;
+    text-decoration:none;
+}
+</style>
 </head>
 
 <body>
 
-<div class="video-container">
-    <h1 id="movieTitle">🎬 Duke ngarkuar...</h1>
+<div class="container">
+    <h2 id="title">Loading...</h2>
+
+    <div class="servers" id="servers"></div>
 
     <iframe id="player" allowfullscreen allow="autoplay; fullscreen"></iframe>
 
     <br>
-    <a href="javascript:history.back()" class="back-link">← Kthehu</a>
+    <a href="javascript:history.back()" class="back">← Kthehu</a>
 </div>
 
 <script>
+// ================= GET MOVIE ID =================
 const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
 
-const slug = params.get('slug');
-const type = params.get('type');
-const title = params.get('title');
+// ================= LOAD MOVIE FROM MAIN.JS =================
+let movie = null;
 
-if (title) {
-    document.getElementById("movieTitle").innerText = decodeURIComponent(title);
+// marrim nga global scope (main.js)
+if (window.opener && window.opener.customMovies) {
+    movie = window.opener.customMovies.find(m => m.id === id);
 }
 
-// ================= PLAYER LOGIC =================
-let videoUrl = "";
-
-// 👉 ABYSS (FIXED)
-if (type === "abyss" && slug) {
-    videoUrl = `https://abyss.to/embed-${slug}.html`;
+if (!movie && window.parent && window.parent.customMovies) {
+    movie = window.parent.customMovies.find(m => m.id === id);
 }
 
-// 👉 VIDMOLY
-else if (type === "vidmoly" && slug) {
-    videoUrl = `https://vidmoly.com/e/${slug}`;
+// fallback (nëse s’gjendet)
+if (!movie) {
+    document.getElementById("title").innerText = "Film nuk u gjet!";
+    throw new Error("Movie not found");
 }
 
-// 👉 DIRECT LINK (testim)
-else if (slug && slug.startsWith("http")) {
-    videoUrl = slug;
+// ================= TITLE =================
+document.getElementById("title").innerText = movie.title;
+
+// ================= ELEMENTS =================
+const serversDiv = document.getElementById("servers");
+const player = document.getElementById("player");
+
+// ================= LOAD SERVER =================
+function loadServer(url, btn){
+
+    if (!url) return;
+
+    player.src = url;
+
+    document.querySelectorAll(".server-btn").forEach(b=>{
+        b.classList.remove("active");
+    });
+
+    btn.classList.add("active");
 }
 
-// ================= APPLY =================
-const iframe = document.getElementById("player");
+// ================= CREATE SERVER BUTTONS =================
+movie.servers.forEach((server, index)=>{
 
-if (videoUrl) {
-    iframe.src = videoUrl;
-} else {
-    document.querySelector(".video-container").innerHTML += `
-        <div class="error">
-            ❌ Gabim: Nuk u gjet video. Kontrollo slug/type.
-        </div>
-    `;
-}
+    const btn = document.createElement("button");
+    btn.className = "server-btn";
+    btn.innerText = server.name;
 
-// ================= ERROR CHECK =================
-setTimeout(() => {
-    try {
-        if (!iframe.src || iframe.src === "") throw "no src";
-    } catch (e) {
-        document.querySelector(".video-container").innerHTML += `
-            <div class="error">
-            ⚠️ Video nuk mund të ngarkohet.<br>
-            Shumë hosta (si abyss) bllokojnë iframe.
-            </div>
-        `;
+    btn.onclick = () => loadServer(server.url, btn);
+
+    serversDiv.appendChild(btn);
+
+    // auto load first server
+    if(index === 0){
+        setTimeout(()=>btn.click(), 200);
     }
-}, 3000);
+});
+
 </script>
 
 </body>
